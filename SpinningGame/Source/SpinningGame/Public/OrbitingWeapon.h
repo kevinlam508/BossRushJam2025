@@ -19,8 +19,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	float RotationSpeed = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
+	float DefenseRotationSpeed = 400;
+
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwitchRotation();
+
+	UFUNCTION(BlueprintCallable, Category = "Orbit")
+	void EnableDefenseSpin();
+
+	UFUNCTION(BlueprintCallable, Category = "Orbit")
+	void DisableDefenseSpin();
 
 protected:
 	// Called when the game starts
@@ -32,5 +41,6 @@ public:
 
 private:
 	bool ReverseDirection;
+	bool DoDefenseSpin;
 	FRotator CurrentRotation;
 };

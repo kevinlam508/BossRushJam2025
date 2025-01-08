@@ -27,8 +27,10 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	float speed = DoDefenseSpin
+		? DefenseRotationSpeed : RotationSpeed;
 	CurrentRotation.Add(0,
-		RotationSpeed * DeltaTime * 
+		speed * DeltaTime *
 			(ReverseDirection ? 1 : -1),
 		0);
 	SetWorldRotation(CurrentRotation);
@@ -37,5 +39,15 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 void UOrbitingWeapon::SwitchRotation()
 {
 	ReverseDirection = !ReverseDirection;
+}
+
+void UOrbitingWeapon::EnableDefenseSpin()
+{
+	DoDefenseSpin = true;
+}
+
+void UOrbitingWeapon::DisableDefenseSpin()
+{
+	DoDefenseSpin = false;
 }
 
