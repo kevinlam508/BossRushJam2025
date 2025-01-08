@@ -25,7 +25,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	FName NeutralCollisionProfileName;
 
-
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
 	void ToBlue();
 
