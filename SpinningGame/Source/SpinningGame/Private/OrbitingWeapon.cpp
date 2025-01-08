@@ -17,8 +17,8 @@ void UOrbitingWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Start time after CD time
 	ActiveSpinTime = SwingDuration + SwingCooldown;
-	
 }
 
 
@@ -27,16 +27,20 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Swinging
 	if (ActiveSpinTime < SwingDuration)
 	{
 		float clampedDeltaTime = FMath::Clamp(DeltaTime, 0,  SwingDuration - ActiveSpinTime);
 		ActiveSpinTime += DeltaTime;
 		Rotation.Add(0, SpinSpeed * clampedDeltaTime, 0);
 	}
+	// Cooldown
 	else if (ActiveSpinTime < SwingDuration + SwingCooldown)
 	{
+		OnSwingEnd.Broadcast();
 		ActiveSpinTime += DeltaTime;
 	}
+	// End, reset for next swing
 	else
 	{
 		SpinSpeed = 0;
@@ -57,6 +61,8 @@ void UOrbitingWeapon::SwingLeft()
 	CurrentSpin = SpinDirection::Left;
 	SpinSpeed = 360 / SwingDuration;
 	ActiveSpinTime = 0;
+
+	OnLeftSwingBegin.Broadcast();
 }
 
 void UOrbitingWeapon::SwingRight()
@@ -69,6 +75,8 @@ void UOrbitingWeapon::SwingRight()
 	CurrentSpin = SpinDirection::Right;
 	SpinSpeed = -360 / SwingDuration;
 	ActiveSpinTime = 0;
+
+	OnRightSwingBegin.Broadcast();
 }
 
 bool UOrbitingWeapon::CanSwing()

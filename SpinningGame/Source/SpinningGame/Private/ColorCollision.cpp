@@ -19,8 +19,17 @@ void UColorCollision::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	// Grab all UPrimitive children
+	TArray<USceneComponent*> temp;
+	GetChildrenComponents(true, temp);
+	for (auto& child : temp)
+	{
+		UPrimitiveComponent* collider = Cast<UPrimitiveComponent>(child);
+		if (collider != nullptr)
+		{
+			ChildColliders.Add(collider);
+		}
+	}
 }
 
 
@@ -30,5 +39,28 @@ void UColorCollision::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UColorCollision::ToBlue()
+{
+	ChangeToCollisionProfile(BlueCollisionProfileName);
+}
+
+void UColorCollision::ToRed()
+{
+	ChangeToCollisionProfile(RedCollisionProfileName);
+}
+
+void UColorCollision::ToNeutral()
+{
+	ChangeToCollisionProfile(NeutralCollisionProfileName);
+}
+
+void UColorCollision::ChangeToCollisionProfile(const FName& profileName)
+{
+	for (auto& collider : ChildColliders)
+	{
+		collider->SetCollisionProfileName(profileName);
+	}
 }
 

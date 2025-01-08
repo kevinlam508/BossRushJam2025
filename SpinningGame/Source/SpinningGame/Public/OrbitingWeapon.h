@@ -13,6 +13,13 @@ enum SpinDirection
 	Right
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftSwingBegin);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRightSwingBegin);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingEnd);
+
+
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UOrbitingWeapon : public USceneComponent
 {
@@ -21,6 +28,16 @@ class SPINNINGGAME_API UOrbitingWeapon : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UOrbitingWeapon();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLeftSwingBegin OnLeftSwingBegin;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRightSwingBegin OnRightSwingBegin;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRightSwingBegin OnSwingEnd;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	float SwingDuration = 0.3;
