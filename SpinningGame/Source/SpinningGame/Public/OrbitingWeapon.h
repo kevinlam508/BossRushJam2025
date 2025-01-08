@@ -23,16 +23,19 @@ public:
 	UOrbitingWeapon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	float SwingDuration = 0.5;
+	float SwingDuration = 0.3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	float SwingCooldown = 1;
+	float SwingCooldown = 0.4;
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwingLeft();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwingRight();
+
+	UFUNCTION(BlueprintCallable, Category = "Orbit")
+	bool CanSwing();
 
 protected:
 	// Called when the game starts

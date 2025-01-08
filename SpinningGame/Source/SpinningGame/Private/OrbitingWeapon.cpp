@@ -49,7 +49,7 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void UOrbitingWeapon::SwingLeft()
 {
-	if (CurrentSpin != SpinDirection::None)
+	if (!CanSwing())
 	{
 		return;
 	}
@@ -61,7 +61,7 @@ void UOrbitingWeapon::SwingLeft()
 
 void UOrbitingWeapon::SwingRight()
 {
-	if (CurrentSpin != SpinDirection::None)
+	if (!CanSwing())
 	{
 		return;
 	}
@@ -69,5 +69,10 @@ void UOrbitingWeapon::SwingRight()
 	CurrentSpin = SpinDirection::Right;
 	SpinSpeed = -360 / SwingDuration;
 	ActiveSpinTime = 0;
+}
+
+bool UOrbitingWeapon::CanSwing()
+{
+	return CurrentSpin == SpinDirection::None;
 }
 
