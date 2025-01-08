@@ -6,6 +6,12 @@
 #include "Components/SceneComponent.h"
 #include "OrbitingWeapon.generated.h"
 
+enum SpinDirection
+{
+	None,
+	Left,
+	Right
+};
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UOrbitingWeapon : public USceneComponent
@@ -17,19 +23,16 @@ public:
 	UOrbitingWeapon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	float RotationSpeed = 100;
+	float SwingDuration = 0.5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	float DefenseRotationSpeed = 400;
+	float SwingCooldown = 1;
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
-	void SwitchRotation();
+	void SwingLeft();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
-	void EnableDefenseSpin();
-
-	UFUNCTION(BlueprintCallable, Category = "Orbit")
-	void DisableDefenseSpin();
+	void SwingRight();
 
 protected:
 	// Called when the game starts
@@ -40,7 +43,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	bool ReverseDirection;
-	bool DoDefenseSpin;
-	FRotator CurrentRotation;
+	SpinDirection CurrentSpin;
+	float SpinSpeed;
+	float ActiveSpinTime;
+
+	// TEMP: center rotation to mouse?
+	FRotator Rotation;
 };

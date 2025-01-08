@@ -17,7 +17,7 @@ void UOrbitingWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	ActiveSpinTime = SwingDuration + SwingCooldown;
 	
 }
 
@@ -27,27 +27,47 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	float speed = DoDefenseSpin
-		? DefenseRotationSpeed : RotationSpeed;
-	CurrentRotation.Add(0,
-		speed * DeltaTime *
-			(ReverseDirection ? 1 : -1),
-		0);
-	SetWorldRotation(CurrentRotation);
+	if (ActiveSpinTime < SwingDuration)
+	{
+		float clampedDeltaTime = FMath::Clamp(DeltaTime, 0,  SwingDuration - ActiveSpinTime);
+		ActiveSpinTime += DeltaTime;
+		Rotation.Add(0, SpinSpeed * clampedDeltaTime, 0);
+	}
+	else if (ActiveSpinTime < SwingDuration + SwingCooldown)
+	{
+		ActiveSpinTime += DeltaTime;
+	}
+	else
+	{
+		SpinSpeed = 0;
+		CurrentSpin = SpinDirection::None;
+	}
+
+	// Keep setting so parent rotation doesn't matter
+	SetWorldRotation(Rotation);
 }
 
-void UOrbitingWeapon::SwitchRotation()
+void UOrbitingWeapon::SwingLeft()
 {
-	ReverseDirection = !ReverseDirection;
+	if (CurrentSpin != SpinDirection::None)
+	{
+		return;
+	}
+
+	CurrentSpin = SpinDirection::Left;
+	SpinSpeed = 360 / SwingDuration;
+	ActiveSpinTime = 0;
 }
 
-void UOrbitingWeapon::EnableDefenseSpin()
+void UOrbitingWeapon::SwingRight()
 {
-	DoDefenseSpin = true;
-}
+	if (CurrentSpin != SpinDirection::None)
+	{
+		return;
+	}
 
-void UOrbitingWeapon::DisableDefenseSpin()
-{
-	DoDefenseSpin = false;
+	CurrentSpin = SpinDirection::Right;
+	SpinSpeed = -360 / SwingDuration;
+	ActiveSpinTime = 0;
 }
 
