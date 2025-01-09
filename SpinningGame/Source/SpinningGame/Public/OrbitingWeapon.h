@@ -5,20 +5,18 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "Engine/DamageEvents.h" 
-#include "DamageType_Red.h"
-#include "DamageType_Blue.h"
+#include "DamageType_A.h"
+#include "DamageType_B.h"
 #include "OrbitingWeapon.generated.h"
 
 enum SpinDirection
 {
 	None,
-	Left,
-	Right
+	A,
+	B
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftSwingBegin);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRightSwingBegin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingBegin);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingEnd);
 
@@ -33,13 +31,13 @@ public:
 	UOrbitingWeapon();
 
 	UPROPERTY(BlueprintAssignable)
-	FOnLeftSwingBegin OnLeftSwingBegin;
+	FOnSwingBegin OnASwingBegin;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnRightSwingBegin OnRightSwingBegin;
+	FOnSwingBegin OnBSwingBegin;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnRightSwingBegin OnSwingEnd;
+	FOnSwingEnd OnSwingEnd;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
@@ -52,10 +50,10 @@ public:
 	float Damage = 1;
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
-	void SwingLeft();
+	void SwingA();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
-	void SwingRight();
+	void SwingB();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	bool CanSwing();

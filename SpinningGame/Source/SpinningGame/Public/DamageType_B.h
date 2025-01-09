@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/DamageType.h"
-#include "DamageType_Red.generated.h"
+#include "DamageType_B.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPINNINGGAME_API UDamageType_Red : public UDamageType
+class SPINNINGGAME_API UDamageType_B : public UDamageType
 {
 	GENERATED_BODY()
 	

@@ -4,32 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "ColorCollision.generated.h"
+#include "TypeCollision.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SPINNINGGAME_API UColorCollision : public USceneComponent
+class SPINNINGGAME_API UTypeCollision : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UColorCollision();
+	UTypeCollision();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	FName BlueCollisionProfileName;
+	FName ACollisionProfileName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	FName RedCollisionProfileName;
+	FName BCollisionProfileName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	FName NeutralCollisionProfileName;
 
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
-	void ToBlue();
+	void ToA();
 
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
-	void ToRed();
+	void ToB();
 
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
 	void ToNeutral();

@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ColorCollision.h"
+#include "TypeCollision.h"
 
 // Sets default values for this component's properties
-UColorCollision::UColorCollision()
+UTypeCollision::UTypeCollision()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -15,7 +15,7 @@ UColorCollision::UColorCollision()
 
 
 // Called when the game starts
-void UColorCollision::BeginPlay()
+void UTypeCollision::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -34,29 +34,29 @@ void UColorCollision::BeginPlay()
 
 
 // Called every frame
-void UColorCollision::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UTypeCollision::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
-void UColorCollision::ToBlue()
+void UTypeCollision::ToA()
 {
-	ChangeToCollisionProfile(BlueCollisionProfileName);
+	ChangeToCollisionProfile(ACollisionProfileName);
 }
 
-void UColorCollision::ToRed()
+void UTypeCollision::ToB()
 {
-	ChangeToCollisionProfile(RedCollisionProfileName);
+	ChangeToCollisionProfile(BCollisionProfileName);
 }
 
-void UColorCollision::ToNeutral()
+void UTypeCollision::ToNeutral()
 {
 	ChangeToCollisionProfile(NeutralCollisionProfileName);
 }
 
-void UColorCollision::ChangeToCollisionProfile(const FName& profileName)
+void UTypeCollision::ChangeToCollisionProfile(const FName& profileName)
 {
 	for (auto& collider : ChildColliders)
 	{

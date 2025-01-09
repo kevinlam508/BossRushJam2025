@@ -80,32 +80,32 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	SetWorldRotation(Rotation);
 }
 
-void UOrbitingWeapon::SwingLeft()
+void UOrbitingWeapon::SwingA()
 {
 	if (!CanSwing())
 	{
 		return;
 	}
 
-	CurrentSpin = SpinDirection::Left;
+	CurrentSpin = SpinDirection::A;
 	SpinSpeed = 360 / SwingDuration;
 	ActiveSpinTime = 0;
 
-	OnLeftSwingBegin.Broadcast();
+	OnASwingBegin.Broadcast();
 }
 
-void UOrbitingWeapon::SwingRight()
+void UOrbitingWeapon::SwingB()
 {
 	if (!CanSwing())
 	{
 		return;
 	}
 
-	CurrentSpin = SpinDirection::Right;
+	CurrentSpin = SpinDirection::B;
 	SpinSpeed = -360 / SwingDuration;
 	ActiveSpinTime = 0;
 
-	OnRightSwingBegin.Broadcast();
+	OnBSwingBegin.Broadcast();
 }
 
 bool UOrbitingWeapon::CanSwing()
@@ -132,9 +132,9 @@ void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, 
 	AActor* actor = GetOwner();
 	APawn* pawn = Cast<APawn>(actor);
 
-	UClass* damageType = (CurrentSpin == SpinDirection::Left 
-		? UDamageType_Blue::StaticClass()
-		: UDamageType_Red::StaticClass());
+	UClass* damageType = (CurrentSpin == SpinDirection::A 
+		? UDamageType_A::StaticClass()
+		: UDamageType_B::StaticClass());
 	FDamageEvent event = FDamageEvent(TSubclassOf<UDamageType>(damageType));
 	
 	OtherActor->TakeDamage(Damage,
