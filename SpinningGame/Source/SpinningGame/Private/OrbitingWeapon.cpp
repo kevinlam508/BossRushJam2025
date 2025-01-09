@@ -19,6 +19,35 @@ void UOrbitingWeapon::BeginPlay()
 
 	// Start time after CD time
 	ActiveSpinTime = SwingDuration + SwingCooldown;
+
+	// Grab all UPrimitive children
+	TArray<USceneComponent*> temp;
+	GetChildrenComponents(true, temp);
+	for (auto& child : temp)
+	{
+		UPrimitiveComponent* collider = Cast<UPrimitiveComponent>(child);
+		if (collider != nullptr)
+		{
+			collider->OnComponentBeginOverlap.AddDynamic(this, &UOrbitingWeapon::WeaponCollision);
+		}
+	}
+}
+
+void UOrbitingWeapon::OnComponentDestroyed(bool HeirarchyDestroy)
+{
+	Super::OnComponentDestroyed(HeirarchyDestroy);
+
+	// Grab all UPrimitive children
+	TArray<USceneComponent*> temp;
+	GetChildrenComponents(true, temp);
+	for (auto& child : temp)
+	{
+		UPrimitiveComponent* collider = Cast<UPrimitiveComponent>(child);
+		if (collider != nullptr)
+		{
+			collider->OnComponentBeginOverlap.RemoveDynamic(this, &UOrbitingWeapon::WeaponCollision);
+		}
+	}
 }
 
 
@@ -82,5 +111,35 @@ void UOrbitingWeapon::SwingRight()
 bool UOrbitingWeapon::CanSwing()
 {
 	return CurrentSpin == SpinDirection::None;
+}
+
+bool UOrbitingWeapon::IsSwinging()
+{
+	return CurrentSpin != SpinDirection::None
+		&& ActiveSpinTime < SwingDuration;
+}
+
+void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	// Not currently attacking, abort
+	if (!IsSwinging())
+	{
+		return;
+	}
+
+	AActor* actor = GetOwner();
+	APawn* pawn = Cast<APawn>(actor);
+
+	UClass* damageType = (CurrentSpin == SpinDirection::Left 
+		? UDamageType_Blue::StaticClass()
+		: UDamageType_Red::StaticClass());
+	FDamageEvent event = FDamageEvent(TSubclassOf<UDamageType>(damageType));
+	
+	OtherActor->TakeDamage(Damage,
+		event,
+		pawn != nullptr ? pawn->GetController() : nullptr,
+		actor);
 }
 

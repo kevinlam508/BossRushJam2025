@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "Engine/DamageEvents.h" 
+#include "DamageType_Red.h"
+#include "DamageType_Blue.h"
 #include "OrbitingWeapon.generated.h"
 
 enum SpinDirection
@@ -45,6 +48,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	float SwingCooldown = 0.4;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
+	float Damage = 1;
+
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwingLeft();
 
@@ -57,6 +63,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void OnComponentDestroyed(bool HeirarchyDestroy) override;
 
 public:	
 	// Called every frame
@@ -66,6 +73,13 @@ private:
 	SpinDirection CurrentSpin;
 	float SpinSpeed;
 	float ActiveSpinTime;
+
+	bool IsSwinging();
+
+	UFUNCTION()
+	void WeaponCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+		const FHitResult& SweepResult);
 
 	// TEMP: center rotation to mouse?
 	FRotator Rotation;
