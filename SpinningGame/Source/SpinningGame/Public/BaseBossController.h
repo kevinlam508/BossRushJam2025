@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "BaseBossController.generated.h"
 
 /**
@@ -19,4 +20,9 @@ public:
 	virtual void EndVulnerability();
 	virtual void BeginAttack(int Number);
 	virtual void EndAttack(int Number);
+
+protected:
+	// Attack changing
+	virtual int GetTotalAttacks() const;
+	void PickRandomAttack();
 };
