@@ -14,6 +14,7 @@
 #include "BounceMovement.h"
 #include "MoveStraight.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 #include "Boss1Controller.generated.h"
 
 /**
@@ -35,6 +36,8 @@ public:
 	TArray<FLocationList> Attack0PatternB;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	float Attack0Period = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0SprayGap = 0.5;
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
@@ -57,11 +60,14 @@ private:
 	TObjectPtr<UHealthComponent> Health;
 	TObjectPtr<UBounceMovement> BounceMove;
 	int CurrentAttack;
-	float AttackTimer;
 
 	void SwitchWeakness();
 
+	// Attack 0
+	FTimerHandle Attack0Timer1;
+	FTimerHandle Attack0Timer2;
+	FTimerHandle Attack0Timer3;
 	void BeginAttack0();
-	void TickAttack0(float DeltaTime);
+	void TickAttack0();
 	void EndAttack0();
 };

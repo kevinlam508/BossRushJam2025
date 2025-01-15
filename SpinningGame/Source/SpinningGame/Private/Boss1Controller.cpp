@@ -29,12 +29,6 @@ void ABoss1Controller::OnPossess_Implementation(AActor* Actor)
 void ABoss1Controller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	switch (CurrentAttack)
-	{
-		case 0:
-			TickAttack0(DeltaTime);
-			break;
-	}
 }
 
 int ABoss1Controller::GetTotalAttacks() const
@@ -99,18 +93,35 @@ void ABoss1Controller::BeginAttack0()
 		randomAngle, FVector::UpVector);
 	BounceMove->MoveTowards(randomDirection);
 
-	AttackTimer = 0;
+	FTimerManager& timerManager = GetPawn()->GetWorldTimerManager();
+	timerManager.SetTimer(
+		Attack0Timer1,
+		this,
+		&ABoss1Controller::TickAttack0,
+		Attack0Period,
+		true,
+		0
+	);
+	timerManager.SetTimer(
+		Attack0Timer2,
+		this,
+		&ABoss1Controller::TickAttack0,
+		Attack0Period,
+		true,
+		Attack0SprayGap
+	);
+	timerManager.SetTimer(
+		Attack0Timer3,
+		this,
+		&ABoss1Controller::TickAttack0,
+		Attack0Period,
+		true,
+		Attack0SprayGap * 2
+	);
 }
 
-void ABoss1Controller::TickAttack0(float DeltaTime)
+void ABoss1Controller::TickAttack0()
 {
-	AttackTimer += DeltaTime;
-	if (AttackTimer < Attack0Period)
-	{
-		return;
-	}
-	AttackTimer = 0;
-
 	// Determine attack based on weakness
 	TSubclassOf<AActor> attackBP = (CurrentWeakness != UDamageType_A::StaticClass()
 		? Attack0BulletGroupABP : Attack0BulletGroupBBP);
@@ -161,5 +172,10 @@ void ABoss1Controller::TickAttack0(float DeltaTime)
 
 void ABoss1Controller::EndAttack0()
 {
-	BounceMove->Stop();
+	BounceMove->Stop(); 
+
+	FTimerManager& timerManager = GetPawn()->GetWorldTimerManager();
+	timerManager.ClearTimer(Attack0Timer1);
+	timerManager.ClearTimer(Attack0Timer2);
+	timerManager.ClearTimer(Attack0Timer3);
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "Engine/DamageEvents.h" 
+#include "TimerManager.h"
 #include "BulletGroupComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -50,7 +51,8 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet", meta = (AllowPrivateAccess = true))
-	float SpawnInAnimationTime;
+	float SpawnInTime;
+	FTimerHandle SpawnInTimer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet", meta = (AllowPrivateAccess = true))
 	int DestroyedBulletCount;
@@ -64,4 +66,6 @@ private:
 	void OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult);
+
+	void SpawnInAnimation();
 };

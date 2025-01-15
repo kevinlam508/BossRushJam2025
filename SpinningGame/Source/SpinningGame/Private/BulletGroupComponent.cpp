@@ -18,9 +18,6 @@ UBulletGroupComponent::UBulletGroupComponent()
 void UBulletGroupComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -28,34 +25,6 @@ void UBulletGroupComponent::BeginPlay()
 void UBulletGroupComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// Finished animating, bail
-	if (SpawnInAnimationTime > SpawnInAnimationDuration)
-	{
-		return;
-	}
-
-	SpawnInAnimationTime += DeltaTime;
-
-	if (SpawnInAnimationTime < SpawnInAnimationDuration)
-	{
-		for (auto& bullet : Info)
-		{
-			bullet.Component->SetRelativeLocation(
-				FMath::Lerp(FVector(0, 0, 0),
-				bullet.Destination,
-				SpawnInAnimationTime / SpawnInAnimationDuration));
-		}
-	}
-	// Over time, snap to final position
-	else if (SpawnInAnimationTime >= SpawnInAnimationDuration)
-	{
-		for (auto& bullet : Info)
-		{
-			bullet.Component->SetRelativeLocation(bullet.Destination);
-		}
-	}
-
 }
 
 void UBulletGroupComponent::SetPattern(TArray<FLocationList>& Pattern)
@@ -80,6 +49,15 @@ void UBulletGroupComponent::SetPattern(TArray<FLocationList>& Pattern)
 		// Use template itself as a bullet
 		AddBullet(bulletTemplates[i], instances[0]);
 	}
+
+	GetOwner()->GetWorldTimerManager().SetTimer(
+		SpawnInTimer,
+		this,
+		&UBulletGroupComponent::SpawnInAnimation,
+		1.0 / 60,
+		true,
+		0
+	);
 }
 
 TObjectPtr<USceneComponent> UBulletGroupComponent::DeepDuplicateChildComponent(TObjectPtr<USceneComponent> ToDuplicate, TObjectPtr<USceneComponent> Parent)
@@ -138,5 +116,32 @@ void UBulletGroupComponent::OnBulletOverlap(UPrimitiveComponent* OverlappedCompo
 	if (DestroyedBulletCount == Info.Num())
 	{
 		GetOwner()->Destroy();
+	}
+}
+
+void UBulletGroupComponent::SpawnInAnimation()
+{
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	float elapsed = timerManager.GetTimerElapsed(SpawnInTimer);
+	SpawnInTime += elapsed;
+
+	// Over time, snap to end position and stop
+	if (SpawnInTime > SpawnInAnimationDuration)
+	{
+		timerManager.ClearTimer(SpawnInTimer);
+		for (auto& bullet : Info)
+		{
+			bullet.Component->SetRelativeLocation(bullet.Destination);
+		}
+	}
+	else
+	{
+		for (auto& bullet : Info)
+		{
+			bullet.Component->SetRelativeLocation(
+				FMath::Lerp(FVector(0, 0, 0),
+					bullet.Destination,
+					SpawnInTime / SpawnInAnimationDuration));
+		}
 	}
 }
