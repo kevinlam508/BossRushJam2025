@@ -25,4 +25,7 @@ protected:
 	// Attack changing
 	virtual int GetTotalAttacks() const;
 	void PickRandomAttack();
+
+	bool IsVulnerable();
+	void BecomeVulnerable();
 };

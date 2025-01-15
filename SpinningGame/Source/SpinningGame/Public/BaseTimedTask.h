@@ -17,7 +17,7 @@ class SPINNINGGAME_API UBaseTimedTask : public UBTTaskNode
 public:
 	UBaseTimedTask(const FObjectInitializer& objectInitializer);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vulnerable")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timed Task")
 	float Duration = 10;
 
 	virtual uint16 GetInstanceMemorySize() const override;

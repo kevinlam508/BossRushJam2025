@@ -23,11 +23,13 @@ void UAttackTask::End(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) cons
 
 EBTNodeResult::Type UAttackTask::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::AbortTask(OwnerComp, NodeMemory);
+
 	ABaseBossController* controller = Cast<ABaseBossController>(OwnerComp.GetAIOwner());
 	if (controller != nullptr)
 	{
 		controller->EndAttack(AttackIndex);
 	}
 
-	return EBTNodeResult::Type::Succeeded;
+	return EBTNodeResult::Type::Aborted;
 }

@@ -39,3 +39,19 @@ void ABaseBossController::PickRandomAttack()
 
 	blackboard->SetValueAsInt(valueKey, currentAttack);
 }
+
+bool ABaseBossController::IsVulnerable()
+{
+	UBlackboardComponent* blackboard = GetBlackboardComponent();
+	FName valueKey = FName(TEXT("IsVulnerable"));
+
+	return blackboard->GetValueAsBool(valueKey);
+}
+
+void ABaseBossController::BecomeVulnerable()
+{
+	UBlackboardComponent* blackboard = GetBlackboardComponent();
+	FName valueKey = FName(TEXT("IsVulnerable"));
+
+	blackboard->SetValueAsBool(valueKey, true);
+}
