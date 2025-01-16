@@ -63,7 +63,7 @@ public:
 	virtual void BeginVulnerability() override;
 	virtual void EndVulnerability() override;
 	virtual void BeginAttack(int Number) override;
-	virtual void EndAttack(int Number) override;
+	virtual void AbortAttack(int Number) override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Test", meta = (AllowPrivateAccess = true))
@@ -83,11 +83,11 @@ private:
 	FTimerHandle Attack0Timer3;
 	void BeginAttack0();
 	void TickAttack0();
-	void EndAttack0();
+	void AbortAttack0();
 
 	// Attack 1
 	TObjectPtr<AActor> Attack1BulletInstance;
 	TObjectPtr<AActor> Attack1BulletInstance2;
 	void BeginAttack1();
-	void EndAttack1();
+	void AbortAttack1();
 };

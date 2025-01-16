@@ -28,7 +28,7 @@ EBTNodeResult::Type UAttackTask::AbortTask(UBehaviorTreeComponent& OwnerComp, ui
 	ABaseBossController* controller = Cast<ABaseBossController>(OwnerComp.GetAIOwner());
 	if (controller != nullptr)
 	{
-		controller->EndAttack(AttackIndex);
+		controller->AbortAttack(AttackIndex);
 	}
 
 	return EBTNodeResult::Type::Aborted;

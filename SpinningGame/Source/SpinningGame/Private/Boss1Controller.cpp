@@ -61,16 +61,16 @@ void ABoss1Controller::BeginAttack(int Number)
 	}
 }
 
-void ABoss1Controller::EndAttack(int Number)
+void ABoss1Controller::AbortAttack(int Number)
 {
 	CurrentAttack = -1;
 	switch (Number)
 	{
 		case 0:
-			EndAttack0();
+			AbortAttack0();
 			break;
 		case 1:
-			EndAttack1();
+			AbortAttack1();
 			break;
 	}
 }
@@ -183,7 +183,7 @@ void ABoss1Controller::TickAttack0()
 	}
 }
 
-void ABoss1Controller::EndAttack0()
+void ABoss1Controller::AbortAttack0()
 {
 	BounceMove->Stop(); 
 
@@ -231,7 +231,7 @@ void ABoss1Controller::BeginAttack1()
 	}
 }
 
-void ABoss1Controller::EndAttack1()
+void ABoss1Controller::AbortAttack1()
 {
 	FollowActor->Target = nullptr;
 

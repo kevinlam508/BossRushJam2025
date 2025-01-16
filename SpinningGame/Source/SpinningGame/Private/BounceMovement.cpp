@@ -55,6 +55,11 @@ void UBounceMovement::MoveTowards(FVector& Direction)
 
 void UBounceMovement::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!IsMoving)
+	{
+		return;
+	}
+
 	HandleWallBounce(OtherActor, Hit);
 	HandlePlayerHit(OtherActor, Hit);
 }

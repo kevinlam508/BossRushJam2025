@@ -15,8 +15,14 @@ void ABaseBossController::BeginAttack(int Number)
 {
 }
 
+void ABaseBossController::AbortAttack(int Number)
+{
+}
+
 void ABaseBossController::EndAttack(int Number)
 {
+	AbortAttack(Number);
+	PickRandomAttack();
 }
 
 int ABaseBossController::GetTotalAttacks() const

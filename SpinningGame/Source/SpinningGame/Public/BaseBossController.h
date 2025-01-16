@@ -20,6 +20,7 @@ public:
 	virtual void EndVulnerability();
 	virtual void BeginAttack(int Number);
 	virtual void EndAttack(int Number);
+	virtual void AbortAttack(int Number);
 
 protected:
 	// Attack changing
