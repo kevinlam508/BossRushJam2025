@@ -22,7 +22,7 @@ void ABoss1Controller::OnPossess_Implementation(AActor* Actor)
 {
 	Health = Actor->GetComponentByClass<UHealthComponent>();
 	BounceMove = Actor->GetComponentByClass<UBounceMovement>();
-
+	FollowActor = Actor->GetComponentByClass<UFollowActor>();
 	SwitchWeakness();
 }
 
@@ -33,7 +33,7 @@ void ABoss1Controller::Tick(float DeltaTime)
 
 int ABoss1Controller::GetTotalAttacks() const
 {
-	return 1;
+	return 2;
 }
 
 void ABoss1Controller::BeginVulnerability()
@@ -55,6 +55,9 @@ void ABoss1Controller::BeginAttack(int Number)
 		case 0:
 			BeginAttack0();
 			break;
+		case 1:
+			BeginAttack1();
+			break;
 	}
 }
 
@@ -65,6 +68,9 @@ void ABoss1Controller::EndAttack(int Number)
 	{
 		case 0:
 			EndAttack0();
+			break;
+		case 1:
+			EndAttack1();
 			break;
 	}
 }
@@ -79,6 +85,32 @@ void ABoss1Controller::SwitchWeakness()
 	{
 		CurrentWeakness = UDamageType_A::StaticClass();
 	}
+}
+
+AActor* ABoss1Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern)
+{
+	FVector spawnLocation = GetPawn()->GetActorLocation();
+	AActor* newInstance = GetWorld()->SpawnActor(
+		blueprint,
+		&spawnLocation);
+
+	if (newInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn attack"));
+		return nullptr;
+	}
+
+	UBulletGroupComponent* bulletGroup = newInstance->GetComponentByClass<UBulletGroupComponent>();
+	if (bulletGroup != nullptr)
+	{
+		bulletGroup->SetPattern(pattern);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing bullet group component"));
+	}
+
+	return newInstance;
 }
 
 void ABoss1Controller::BeginAttack0()
@@ -100,7 +132,7 @@ void ABoss1Controller::BeginAttack0()
 		&ABoss1Controller::TickAttack0,
 		Attack0Period,
 		true,
-		0
+		Attack0Period
 	);
 	timerManager.SetTimer(
 		Attack0Timer2,
@@ -108,7 +140,7 @@ void ABoss1Controller::BeginAttack0()
 		&ABoss1Controller::TickAttack0,
 		Attack0Period,
 		true,
-		Attack0SprayGap
+		Attack0Period + Attack0SprayGap
 	);
 	timerManager.SetTimer(
 		Attack0Timer3,
@@ -116,7 +148,7 @@ void ABoss1Controller::BeginAttack0()
 		&ABoss1Controller::TickAttack0,
 		Attack0Period,
 		true,
-		Attack0SprayGap * 2
+		Attack0Period + Attack0SprayGap * 2
 	);
 }
 
@@ -134,26 +166,7 @@ void ABoss1Controller::TickAttack0()
 		return;
 	}
 
-	FVector spawnLocation = GetPawn()->GetActorLocation();
-	AActor* newInstance = GetWorld()->SpawnActor(
-		attackBP,
-		&spawnLocation);
-
-	if (newInstance == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn attack"));
-		return;
-	}
-
-	UBulletGroupComponent* bulletGroup = newInstance->GetComponentByClass<UBulletGroupComponent>();
-	if (bulletGroup != nullptr)
-	{
-		bulletGroup->SetPattern(bulletPattern);
-	}
-	else 
-	{
-		UE_LOG(LogTemp, Error, TEXT("Missing bullet group component"));
-	}
+	AActor* newInstance = SpawnBulletGroupOnActor(attackBP, bulletPattern);
 
 	UMoveStraight* moveStraight = newInstance->GetComponentByClass<UMoveStraight>();
 	if (moveStraight != nullptr)
@@ -178,4 +191,58 @@ void ABoss1Controller::EndAttack0()
 	timerManager.ClearTimer(Attack0Timer1);
 	timerManager.ClearTimer(Attack0Timer2);
 	timerManager.ClearTimer(Attack0Timer3);
+}
+
+void ABoss1Controller::BeginAttack1()
+{
+	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	FollowActor->Target = player;
+
+	TSubclassOf<AActor> attackBP = (CurrentWeakness != UDamageType_A::StaticClass()
+		? Attack1BulletGroupABP : Attack1BulletGroupBBP);
+	TSubclassOf<AActor> attackBP2 = (CurrentWeakness == UDamageType_A::StaticClass()
+		? Attack1BulletGroupABP : Attack1BulletGroupBBP);
+	if (attackBP == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing attack 1 BP"));
+		return;
+	}
+
+	Attack1BulletInstance = SpawnBulletGroupOnActor(attackBP, Attack1Pattern);
+	UFollowActor* followActor = Attack1BulletInstance->GetComponentByClass<UFollowActor>();
+	if (followActor != nullptr)
+	{
+		followActor->Target = GetPawn();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing follow actor component"));
+	}
+
+	Attack1BulletInstance2 = SpawnBulletGroupOnActor(attackBP2, Attack1Pattern2);
+	followActor = Attack1BulletInstance2->GetComponentByClass<UFollowActor>();
+	if (followActor != nullptr)
+	{
+		followActor->Target = GetPawn();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing follow actor component"));
+	}
+}
+
+void ABoss1Controller::EndAttack1()
+{
+	FollowActor->Target = nullptr;
+
+	if (Attack1BulletInstance != nullptr)
+	{
+		Attack1BulletInstance->Destroy();
+		Attack1BulletInstance = nullptr;
+	}
+	if (Attack1BulletInstance2 != nullptr)
+	{
+		Attack1BulletInstance2->Destroy();
+		Attack1BulletInstance2 = nullptr;
+	}
 }

@@ -27,7 +27,7 @@ void UBulletGroupComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBulletGroupComponent::SetPattern(TArray<FLocationList>& Pattern)
+void UBulletGroupComponent::SetPattern(const TArray<FLocationList>& Pattern)
 {
 	TArray<TObjectPtr<USceneComponent>> bulletTemplates
 		= GetAttachChildren();

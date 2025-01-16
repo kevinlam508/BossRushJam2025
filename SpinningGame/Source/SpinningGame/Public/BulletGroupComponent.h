@@ -47,7 +47,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	// nth element of the pattern is how many and where the nth child of this component will be spawned
-	void SetPattern(TArray<FLocationList>& Pattern);	
+	void SetPattern(const TArray<FLocationList>& Pattern);	
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet", meta = (AllowPrivateAccess = true))

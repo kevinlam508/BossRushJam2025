@@ -13,6 +13,7 @@
 #include "HealthComponent.h"
 #include "BounceMovement.h"
 #include "MoveStraight.h"
+#include "FollowActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Boss1Controller.generated.h"
@@ -26,6 +27,7 @@ class SPINNINGGAME_API ABoss1Controller : public ABaseBossController
 	GENERATED_BODY()
 	
 public:
+	// Attack 0
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	TSubclassOf<AActor> Attack0BulletGroupABP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
@@ -38,6 +40,16 @@ public:
 	float Attack0Period = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	float Attack0SprayGap = 0.5;
+
+	// Attack 1
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TSubclassOf<AActor> Attack1BulletGroupABP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TSubclassOf<AActor> Attack1BulletGroupBBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TArray<FLocationList> Attack1Pattern;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TArray<FLocationList> Attack1Pattern2;
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
@@ -59,9 +71,11 @@ private:
 
 	TObjectPtr<UHealthComponent> Health;
 	TObjectPtr<UBounceMovement> BounceMove;
+	TObjectPtr<UFollowActor> FollowActor;
 	int CurrentAttack;
 
 	void SwitchWeakness();
+	AActor* SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern);
 
 	// Attack 0
 	FTimerHandle Attack0Timer1;
@@ -70,4 +84,10 @@ private:
 	void BeginAttack0();
 	void TickAttack0();
 	void EndAttack0();
+
+	// Attack 1
+	TObjectPtr<AActor> Attack1BulletInstance;
+	TObjectPtr<AActor> Attack1BulletInstance2;
+	void BeginAttack1();
+	void EndAttack1();
 };

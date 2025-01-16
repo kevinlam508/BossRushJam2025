@@ -34,8 +34,11 @@ void ABaseBossController::PickRandomAttack()
 	// Guaruntees same attack is never used twice
 	// Could handle as a bag, but this is good enough
 	int totalAttacks = GetTotalAttacks();
-	currentAttack += FMath::RandRange(1, totalAttacks);
+	currentAttack += FMath::RandRange(1, totalAttacks - 1);
 	currentAttack = currentAttack % totalAttacks;
+
+	UE_LOG(LogTemp, Warning, TEXT("total %i"), totalAttacks);
+	UE_LOG(LogTemp, Warning, TEXT("current %i"), currentAttack);
 
 	blackboard->SetValueAsInt(valueKey, currentAttack);
 }
