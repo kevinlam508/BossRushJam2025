@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "BaseBossController.h"
 #include "BulletGroupComponent.h"
@@ -16,6 +17,7 @@
 #include "FollowActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Curves/CurveFloat.h"
 #include "Boss1Controller.generated.h"
 
 /**
@@ -40,6 +42,8 @@ public:
 	float Attack0Period = 10;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	float Attack0SprayGap = 0.5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0Speed = 1500;
 
 	// Attack 1
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
@@ -50,6 +54,21 @@ public:
 	TArray<FLocationList> Attack1Pattern;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
 	TArray<FLocationList> Attack1Pattern2;
+
+	// Attack 2
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float Attack2ChargeDuration = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	UCurveFloat* Attack2SpeedCurve;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float Attack2DashDuration = 25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float DashAttackDamage = 40;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float DashPushVelocityMultiplier = 1.1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float DashPushUpwardsVelocity = 10;
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
@@ -90,4 +109,23 @@ private:
 	TObjectPtr<AActor> Attack1BulletInstance2;
 	void BeginAttack1();
 	void AbortAttack1();
+
+	// Attack 2
+	TObjectPtr<UBoxComponent> DashAttackBox;
+	ECollisionEnabled::Type DashAttackBoxCollisionType;
+	FTimerHandle Attack2ChargeTimer;
+	FTimerHandle Attack2DashTimer;
+	float Attack2ChargeTime;
+	float Attack2DashTime;
+	void BeginAttack2();
+	void AbortAttack2();
+	void Attack2ChargeUp();
+	void Attack2BeginDash();
+	void Attack2Dash();
+	void PushPlayer(ACharacter* Player, FVector Direction, float Velocity);
+
+	UFUNCTION()
+	void DashCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+		const FHitResult& SweepResult);
 };

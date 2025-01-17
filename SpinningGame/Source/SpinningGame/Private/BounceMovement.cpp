@@ -40,10 +40,10 @@ void UBounceMovement::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		return;
 	}
 
+	GetOwner()->SetActorRotation(BounceMoveDirection.Rotation());
 	FVector location = GetOwner()->GetActorLocation();
 	location += Speed * DeltaTime * BounceMoveDirection;
-	GetOwner()->SetActorLocation(location,
-		true);
+	GetOwner()->SetActorLocation(location, true);
 }
 
 void UBounceMovement::MoveTowards(FVector& Direction)
@@ -98,5 +98,10 @@ void UBounceMovement::HandlePlayerHit(AActor* OtherActor, const FHitResult& Hit)
 void UBounceMovement::Stop()
 {
 	IsMoving = false;
+}
+
+FVector UBounceMovement::GetDirection() const
+{
+	return BounceMoveDirection;
 }
 

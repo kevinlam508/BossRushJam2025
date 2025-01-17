@@ -35,6 +35,7 @@ public:
 
 	void MoveTowards(FVector& Direction);
 	void Stop();
+	FVector GetDirection() const;
 
 private:
 
