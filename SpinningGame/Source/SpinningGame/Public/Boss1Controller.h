@@ -44,6 +44,8 @@ public:
 	float Attack0SprayGap = 0.5;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	float Attack0Speed = 1500;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0Damage = 1;
 
 	// Attack 1
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
@@ -54,6 +56,8 @@ public:
 	TArray<FLocationList> Attack1Pattern;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
 	TArray<FLocationList> Attack1Pattern2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1Damage = 10;
 
 	// Attack 2
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
@@ -94,7 +98,7 @@ private:
 	int CurrentAttack;
 
 	void SwitchWeakness();
-	AActor* SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern);
+	AActor* SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern, float damage = -1);
 
 	// Attack 0
 	FTimerHandle Attack0Timer1;

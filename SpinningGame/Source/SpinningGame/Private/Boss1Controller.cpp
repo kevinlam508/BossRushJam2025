@@ -100,7 +100,7 @@ void ABoss1Controller::SwitchWeakness()
 	}
 }
 
-AActor* ABoss1Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern)
+AActor* ABoss1Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern, float damage)
 {
 	FVector spawnLocation = GetPawn()->GetActorLocation();
 	AActor* newInstance = GetWorld()->SpawnActor(
@@ -117,6 +117,10 @@ AActor* ABoss1Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blu
 	if (bulletGroup != nullptr)
 	{
 		bulletGroup->SetPattern(pattern);
+		if (damage > -1)
+		{
+			bulletGroup->Damage = damage;
+		}
 	}
 	else
 	{
@@ -180,7 +184,8 @@ void ABoss1Controller::TickAttack0()
 		return;
 	}
 
-	AActor* newInstance = SpawnBulletGroupOnActor(attackBP, bulletPattern);
+	AActor* newInstance = SpawnBulletGroupOnActor(attackBP, bulletPattern,
+		Attack0Damage);
 
 	UMoveStraight* moveStraight = newInstance->GetComponentByClass<UMoveStraight>();
 	if (moveStraight != nullptr)
@@ -222,7 +227,7 @@ void ABoss1Controller::BeginAttack1()
 		return;
 	}
 
-	Attack1BulletInstance = SpawnBulletGroupOnActor(attackBP, Attack1Pattern);
+	Attack1BulletInstance = SpawnBulletGroupOnActor(attackBP, Attack1Pattern, Attack1Damage);
 	UFollowActor* followActor = Attack1BulletInstance->GetComponentByClass<UFollowActor>();
 	if (followActor != nullptr)
 	{
@@ -233,7 +238,7 @@ void ABoss1Controller::BeginAttack1()
 		UE_LOG(LogTemp, Error, TEXT("Missing follow actor component"));
 	}
 
-	Attack1BulletInstance2 = SpawnBulletGroupOnActor(attackBP2, Attack1Pattern2);
+	Attack1BulletInstance2 = SpawnBulletGroupOnActor(attackBP2, Attack1Pattern2, Attack1Damage);
 	followActor = Attack1BulletInstance2->GetComponentByClass<UFollowActor>();
 	if (followActor != nullptr)
 	{
