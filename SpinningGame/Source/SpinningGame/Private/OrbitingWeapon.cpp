@@ -135,7 +135,12 @@ void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, 
 	UClass* damageType = (CurrentSpin == SpinDirection::A 
 		? UDamageType_A::StaticClass()
 		: UDamageType_B::StaticClass());
-	FDamageEvent event = FDamageEvent(TSubclassOf<UDamageType>(damageType));
+	FPointDamageEvent  event = FPointDamageEvent(
+		Damage,
+		SweepResult,
+		FVector(),
+		TSubclassOf<UDamageType>(damageType)
+	);
 	
 	OtherActor->TakeDamage(Damage,
 		event,
