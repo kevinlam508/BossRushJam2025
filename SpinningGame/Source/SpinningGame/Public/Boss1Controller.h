@@ -67,6 +67,8 @@ public:
 	UCurveFloat* Attack2SpeedCurve;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	float Attack2DashDuration = 25;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	TSubclassOf<AActor> Attack2Indicator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	float DashAttackDamage = 40;
@@ -118,6 +120,7 @@ private:
 
 	// Attack 2
 	TObjectPtr<UBoxComponent> DashAttackBox;
+	TObjectPtr<AActor> Attack2IndicatorInstance;
 	ECollisionEnabled::Type DashAttackBoxCollisionType;
 	FTimerHandle Attack2ChargeTimer;
 	FTimerHandle Attack2DashTimer;

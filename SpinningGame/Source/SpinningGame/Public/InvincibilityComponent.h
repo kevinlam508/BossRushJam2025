@@ -22,7 +22,7 @@ public:
 	UInvincibilityComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Invincibility")
-	float Duration = 0.5;
+	float DefaultDuration = 0.5;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnInvicibleStateChange OnInvicibleStateChange;
@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartInvincibility();
+
+	UFUNCTION(BlueprintCallable)
+	void StartInvincibilityWithDuration(float Duration);
 
 	UFUNCTION(BlueprintCallable)
 	void EndInvincibilityEarly();

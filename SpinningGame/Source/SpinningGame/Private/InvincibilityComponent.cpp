@@ -16,6 +16,11 @@ bool UInvincibilityComponent::GetIsInvincible() const
 
 void UInvincibilityComponent::StartInvincibility()
 {
+	StartInvincibilityWithDuration(DefaultDuration);
+}
+
+void UInvincibilityComponent::StartInvincibilityWithDuration(float Duration)
+{
 	if (IsInvincible)
 	{
 		return;

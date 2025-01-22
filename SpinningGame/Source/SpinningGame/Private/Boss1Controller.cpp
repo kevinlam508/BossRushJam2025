@@ -279,6 +279,15 @@ void ABoss1Controller::AbortAttack1()
 
 void ABoss1Controller::BeginAttack2()
 {
+	// Restart invincibility for the length of charge
+	Invincibility->EndInvincibilityEarly();
+	Invincibility->StartInvincibilityWithDuration(Attack2ChargeDuration);
+
+	FVector spawnLocation = GetPawn()->GetActorLocation();
+	Attack2IndicatorInstance = GetWorld()->SpawnActor(
+		Attack2Indicator,
+		&spawnLocation);
+
 	FTimerManager& timerManager = GetPawn()->GetWorldTimerManager();
 	Attack2ChargeTime = 0;
 	timerManager.SetTimer(
@@ -299,6 +308,8 @@ void ABoss1Controller::AbortAttack2()
 	timerManager.ClearTimer(Attack2DashTimer);
 
 	DashAttackBox->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+
+	Invincibility->EndInvincibilityEarly();
 }
 
 void ABoss1Controller::Attack2ChargeUp()
@@ -309,6 +320,8 @@ void ABoss1Controller::Attack2ChargeUp()
 	if (Attack2ChargeTime > Attack2ChargeDuration)
 	{
 		timerManager.ClearTimer(Attack2ChargeTimer);
+		Attack2IndicatorInstance->Destroy();
+		Attack2IndicatorInstance = nullptr;
 		Attack2BeginDash();
 	}
 	else
@@ -316,6 +329,11 @@ void ABoss1Controller::Attack2ChargeUp()
 		// Change animation
 		// TEMP: make the boss spin around
 		GetPawn()->AddActorWorldRotation(FQuat(0, 0, 1, 0));
+		
+		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		FVector towardsPlayer = player->GetActorLocation()
+			- GetPawn()->GetActorLocation();
+		Attack2IndicatorInstance->SetActorRotation(towardsPlayer.Rotation());
 	}
 }
 
