@@ -15,6 +15,7 @@
 #include "BounceMovement.h"
 #include "MoveStraight.h"
 #include "FollowActor.h"
+#include "InvincibilityComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Curves/CurveFloat.h"
@@ -95,6 +96,7 @@ private:
 	TObjectPtr<UHealthComponent> Health;
 	TObjectPtr<UBounceMovement> BounceMove;
 	TObjectPtr<UFollowActor> FollowActor;
+	TObjectPtr<UInvincibilityComponent> Invincibility;
 	int CurrentAttack;
 
 	void SwitchWeakness();

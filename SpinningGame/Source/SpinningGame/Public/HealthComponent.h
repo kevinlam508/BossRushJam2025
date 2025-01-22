@@ -34,7 +34,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth = 100;
 

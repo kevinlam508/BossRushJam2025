@@ -5,6 +5,12 @@
 
 void ABoss1Controller::ProcessDamage(float Amount, TSubclassOf<UDamageType> Type)
 {
+	if (Invincibility != nullptr 
+		&& Invincibility->GetIsInvincible())
+	{
+		return;
+	}
+
 	if (IsVulnerable())
 	{
 		if (Health != nullptr)
@@ -23,6 +29,7 @@ void ABoss1Controller::OnPossess_Implementation(AActor* Actor)
 	Health = Actor->GetComponentByClass<UHealthComponent>();
 	BounceMove = Actor->GetComponentByClass<UBounceMovement>();
 	FollowActor = Actor->GetComponentByClass<UFollowActor>();
+	Invincibility = Actor->GetComponentByClass<UInvincibilityComponent>();
 
 	UObject* obj = Actor->GetDefaultSubobjectByName(FName("Charge Hitbox"));
 	DashAttackBox = Cast<UBoxComponent>(obj);
@@ -52,6 +59,10 @@ void ABoss1Controller::EndVulnerability()
 {
 	SwitchWeakness();
 	PickRandomAttack();
+	if (Invincibility != nullptr)
+	{
+		Invincibility->StartInvincibility();
+	}
 }
 
 void ABoss1Controller::BeginAttack(int Number)
@@ -377,7 +388,6 @@ void ABoss1Controller::PushPlayer(ACharacter* Player, FVector Direction, float V
 	delegate.BindLambda([&, Player, kbForce]()
 	{
 		Player->LaunchCharacter(kbForce, true, false);
-		UE_LOG(LogTemp, Warning, TEXT("kb with %s"), *kbForce.ToString());
 	});
 	FTimerManager& timerManager = GetPawn()->GetWorldTimerManager();
 	timerManager.SetTimerForNextTick(delegate);
