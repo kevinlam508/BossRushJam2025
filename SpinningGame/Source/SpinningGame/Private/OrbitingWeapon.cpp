@@ -59,9 +59,7 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// Swinging
 	if (ActiveSpinTime < SwingDuration)
 	{
-		float clampedDeltaTime = FMath::Clamp(DeltaTime, 0,  SwingDuration - ActiveSpinTime);
 		ActiveSpinTime += DeltaTime;
-		Rotation.Add(0, SpinSpeed * clampedDeltaTime, 0);
 	}
 	// Cooldown
 	else if (ActiveSpinTime < SwingDuration + SwingCooldown)
@@ -72,12 +70,8 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	// End, reset for next swing
 	else
 	{
-		SpinSpeed = 0;
 		CurrentSpin = SpinDirection::None;
 	}
-
-	// Keep setting so parent rotation doesn't matter
-	SetWorldRotation(Rotation);
 }
 
 void UOrbitingWeapon::SwingA()
@@ -86,11 +80,8 @@ void UOrbitingWeapon::SwingA()
 	{
 		return;
 	}
-
-	CurrentSpin = SpinDirection::A;
-	SpinSpeed = 360 / SwingDuration;
 	ActiveSpinTime = 0;
-
+	CurrentSpin = SpinDirection::A;
 	OnASwingBegin.Broadcast();
 }
 
@@ -100,11 +91,8 @@ void UOrbitingWeapon::SwingB()
 	{
 		return;
 	}
-
-	CurrentSpin = SpinDirection::B;
-	SpinSpeed = -360 / SwingDuration;
 	ActiveSpinTime = 0;
-
+	CurrentSpin = SpinDirection::B;
 	OnBSwingBegin.Broadcast();
 }
 

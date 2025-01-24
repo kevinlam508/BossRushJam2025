@@ -69,7 +69,7 @@ public:
 
 private:
 	SpinDirection CurrentSpin;
-	float SpinSpeed;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Orbit Controls", meta = (AllowPrivateAccess = true))
 	float ActiveSpinTime;
 
 	bool IsSwinging();
@@ -78,7 +78,4 @@ private:
 	void WeaponCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult);
-
-	// TEMP: center rotation to mouse?
-	FRotator Rotation;
 };
