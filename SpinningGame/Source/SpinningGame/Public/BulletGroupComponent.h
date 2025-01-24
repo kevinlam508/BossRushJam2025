@@ -13,7 +13,7 @@ struct FLocationList
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FVector> Row;
 };
 
