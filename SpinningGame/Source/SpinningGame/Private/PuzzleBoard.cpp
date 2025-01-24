@@ -31,12 +31,29 @@ void PuzzleBoard::RandomizeBoard()
 	}
 }
 
+void PuzzleBoard::LogBoard() const
+{
+	FTextFormat format = FTextFormat::FromString("{0} {1} {2}\n{3} {4} {5}\n{6} {7} {8}\n");
+	FText boardString = FText::FormatOrdered(format,
+		Grid[0][0],
+		Grid[0][1],
+		Grid[0][2],
+		Grid[1][0],
+		Grid[1][1],
+		Grid[1][2],
+		Grid[2][0],
+		Grid[2][1],
+		Grid[2][2]);
+	UE_LOG(LogTemp, Warning, TEXT("Board \n%s"), *boardString.ToString());
+
+}
+
 void PuzzleBoard::RotateCorner(BoardCorner Corner, CornerRotation Rotation)
 {
 	int x;
 	int y;
 
-	switch (Rotation)
+	switch (Corner)
 	{
 		case BoardCorner::TopLeft:
 			x = 0;
@@ -83,10 +100,10 @@ void PuzzleBoard::RotateTiles(int X, int Y, CornerRotation Rotation)
 
 	switch (Rotation)
 	{
-		case CornerRotation::Clockwise:
+		case CornerRotation::CounterClockwise:
 			RotateValues(a, b, c, d);
 			break;
-		case CornerRotation::CounterClockwise:
+		case CornerRotation::Clockwise:
 			RotateValues(d, c, b, a);
 			break;
 	}

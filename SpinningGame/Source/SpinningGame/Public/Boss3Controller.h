@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BaseBossController.h"
 #include "PuzzleBoard.h"
 #include "DamageType_A.h"
 #include "DamageType_B.h"
@@ -15,14 +16,17 @@
  * 
  */
 UCLASS()
-class SPINNINGGAME_API ABoss3Controller : public AAIController
+class SPINNINGGAME_API ABoss3Controller : public ABaseBossController
 {
 	GENERATED_BODY()
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle Board")
-	float RotationAnimationDuration = 5;
+	float RotationAnimationDuration = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle Board")
+	float RandomizePiecesAnimationDuration = 5;
 
 	UFUNCTION(BlueprintCallable)
 	void OnPossess_Implementation(AActor* Actor);
@@ -30,12 +34,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType);
 
+	virtual void Setup(float Duration) override;
+	virtual void EndVulnerability() override;
 private:
 
 	PuzzleBoard Board;
-	FTimerHandle RotationHandle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puzzle Board", meta = (AllowPrivateAccess = true))
-	bool IsRotationInProgress;
 	TObjectPtr<UPuzzleBoardViewComponent> BoardView;
+
+	void RandomizeBoard();
 };

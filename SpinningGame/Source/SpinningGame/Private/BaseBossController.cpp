@@ -3,6 +3,14 @@
 
 #include "BaseBossController.h"
 
+void ABaseBossController::Setup(float Duration)
+{
+	UBlackboardComponent* blackboard = GetBlackboardComponent();
+	FName valueKey = FName(TEXT("IsSetup"));
+
+	blackboard->SetValueAsBool(valueKey, true);
+}
+
 void ABaseBossController::BeginVulnerability()
 {
 }

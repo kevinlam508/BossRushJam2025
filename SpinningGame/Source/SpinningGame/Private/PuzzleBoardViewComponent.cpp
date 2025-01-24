@@ -19,11 +19,29 @@ void UPuzzleBoardViewComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (auto& child : GetAttachChildren())
+	{
+		UPuzzleBoardPieceComponent* piece = Cast<UPuzzleBoardPieceComponent>(child);
+		if (piece != nullptr)
+		{
+			Pieces.AddUnique(piece->Type, piece);
+		}
+	}
+
 	for (int y = 0; y < PuzzleBoard::Size; y++)
 	{
+		TArray<TObjectPtr<UPuzzleBoardPieceComponent>> piecesOfType;
+		Pieces.MultiFind(y, piecesOfType);
 		for (int x = 0; x < PuzzleBoard::Size; x++)
 		{
-			Board[y][x] = Cast<USceneComponent>(BoardComponents[y * PuzzleBoard::Size + x].GetComponent(GetOwner()));
+			Board[y][x] = piecesOfType[x];
+			piecesOfType[x]->SetRelativeLocation(
+				FVector(
+					PieceDistance * (y - 1),
+					PieceDistance * (PuzzleBoard::Size - x - 2),
+					0
+				)
+			);
 		}
 	}
 }
@@ -35,6 +53,112 @@ void UPuzzleBoardViewComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UPuzzleBoardViewComponent::SetPattern(const PuzzleBoard& BoardData, float Duration)
+{
+	int useByType[PieceTypes];
+	for (int i = 0; i < PieceTypes; i++)
+	{
+		useByType[i] = 0;
+	}
+
+	TArray<TObjectPtr<UPuzzleBoardPieceComponent>> piecesOfType;
+	for (int y = 0; y < PuzzleBoard::Size; y++)
+	{
+		for (int x = 0; x < PuzzleBoard::Size; x++)
+		{
+			// What piece should go here?
+			int desiredType = BoardData.GetValue(x, y);
+			
+			// Get the next free pieces
+			Pieces.MultiFind(desiredType,
+				piecesOfType,
+				true);
+			int useIndex = useByType[desiredType];
+			USceneComponent* piece = piecesOfType[useIndex];
+			useByType[desiredType]++;
+
+			// Set up animation info
+			int animationIndex = desiredType * PuzzleBoard::Size + useIndex;
+			SetPatternSources[animationIndex] = piece->GetRelativeLocation();
+			SetPatternDestinations[animationIndex]
+				= FVector(
+					PieceDistance * (y - 1),
+					PieceDistance * (PuzzleBoard::Size - x - 2),
+					0
+				);
+
+			Board[y][x] = piece;
+		}
+	}
+
+	AnimationDuration = Duration;
+	AnimationTimePassed = 0;
+
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	timerManager.SetTimer(
+		AnimationHandle,
+		this,
+		&UPuzzleBoardViewComponent::SetPatternAnimation,
+		1.0 / 60,
+		true
+	);
+}
+
+bool UPuzzleBoardViewComponent::IsAnimating() const
+{
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	return timerManager.IsTimerActive(AnimationHandle);
+}
+
+void UPuzzleBoardViewComponent::SetPatternAnimation()
+{
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	AnimationTimePassed += timerManager.GetTimerElapsed(AnimationHandle);
+
+	// finished, snap to final positions
+	if (AnimationTimePassed > AnimationDuration)
+	{
+		FinishSetPattern();
+		return;
+	}
+
+	float scalar = AnimationTimePassed / AnimationDuration;
+	for (int type = 0; type < PieceTypes; type++)
+	{
+		TArray<TObjectPtr<UPuzzleBoardPieceComponent>> piecesOfType;
+		Pieces.MultiFind(type, piecesOfType, true);
+		for (int i = 0; i < PieceCountPerType; i++)
+		{
+			int animationIndex = type * PieceTypes + i;
+			piecesOfType[i]->SetRelativeLocation
+				(
+					FMath::Lerp(
+						SetPatternSources[animationIndex],
+						SetPatternDestinations[animationIndex],
+						scalar
+					)
+				);
+		}
+	}
+}
+
+void UPuzzleBoardViewComponent::FinishSetPattern()
+{
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	timerManager.ClearTimer(AnimationHandle);
+
+	for (int y = 0; y < PuzzleBoard::Size; y++)
+	{
+		TArray<TObjectPtr<UPuzzleBoardPieceComponent>> piecesOfType;
+		Pieces.MultiFind(y, piecesOfType, true);
+		for (int x = 0; x < PuzzleBoard::Size; x++)
+		{
+			piecesOfType[x]->SetRelativeLocation(
+				SetPatternDestinations[y * PuzzleBoard::Size + x]);
+		}
+	}
 }
 
 void UPuzzleBoardViewComponent::AnimateRotation(BoardCorner Corner, CornerRotation Rotation, float Duration)
@@ -60,9 +184,6 @@ void UPuzzleBoardViewComponent::AnimateRotation(BoardCorner Corner, CornerRotati
 			y = 1;
 			break;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Rot x %i"), x);
-	UE_LOG(LogTemp, Warning, TEXT("Rot y %i"), y)
 
 	TObjectPtr<USceneComponent>* TilePointers[4];
 	TilePointers[0] = &Board[y][x];

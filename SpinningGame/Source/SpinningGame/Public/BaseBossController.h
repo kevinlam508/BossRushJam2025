@@ -16,6 +16,7 @@ class SPINNINGGAME_API ABaseBossController : public AAIController
 	GENERATED_BODY()
 	
 public:
+	virtual void Setup(float Duration);
 	virtual void BeginVulnerability();
 	virtual void EndVulnerability();
 	virtual void BeginAttack(int Number);

@@ -3,7 +3,6 @@
 
 #include "Boss3Controller.h"
 
-
 void ABoss3Controller::OnPossess_Implementation(AActor* Actor)
 {
 	BoardView = Actor->GetComponentByClass<UPuzzleBoardViewComponent>();
@@ -34,24 +33,29 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 		: CornerRotation::Clockwise;
 
 	// Ignore rotations while rotating
-	if (IsRotationInProgress)
+	if (BoardView->IsAnimating())
 	{
 		return;
 	}
-	IsRotationInProgress = true; 
-	FTimerDelegate delegate;
-	delegate.BindLambda([&]()
-	{
-		IsRotationInProgress = false;
-	});
-	FTimerManager& timeManager = GetPawn()->GetWorldTimerManager();
-	timeManager.SetTimer(
-		RotationHandle,
-		delegate,
-		RotationAnimationDuration,
-		false
-	);
 
 	Board.RotateCorner(corner, rotation);
 	BoardView->AnimateRotation(corner, rotation, RotationAnimationDuration);
+}
+
+void ABoss3Controller::Setup(float Duration)
+{
+	Super::Setup(Duration);
+	RandomizeBoard();
+}
+
+void ABoss3Controller::EndVulnerability()
+{
+	Super::EndVulnerability();
+	RandomizeBoard();
+}
+
+void ABoss3Controller::RandomizeBoard()
+{
+	Board.RandomizeBoard();
+	BoardView->SetPattern(Board, RandomizePiecesAnimationDuration);
 }

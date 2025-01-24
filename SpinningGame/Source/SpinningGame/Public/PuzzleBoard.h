@@ -36,6 +36,8 @@ public:
 	bool HasLine() const;
 	int GetValue(int X, int Y) const;
 
+	void LogBoard() const;
+
 private:
 
 	// Each row is a whole board pattern
