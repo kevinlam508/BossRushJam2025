@@ -6,10 +6,28 @@
 void ABoss3Controller::OnPossess_Implementation(AActor* Actor)
 {
 	BoardView = Actor->GetComponentByClass<UPuzzleBoardViewComponent>();
+	RotationColliderEvents = Actor->GetComponentByClass<URotationColliderEvents>();
+	
+	BoardView->OnRotationEnd.AddDynamic(this, &ABoss3Controller::CheckVulerability);
+	BoardView->OnSetPatternEnd.AddDynamic(this, &ABoss3Controller::OnSetPatternAnimationEnd);
+}
+
+void ABoss3Controller::OnUnPossess_Implementation()
+{
+	BoardView->OnRotationEnd.RemoveDynamic(this, &ABoss3Controller::CheckVulerability);
+	BoardView->OnSetPatternEnd.RemoveDynamic(this, &ABoss3Controller::OnSetPatternAnimationEnd);
 }
 
 void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType)
 {
+	// Only rotate while vulnerable
+	// or not currently rotating
+	if (IsVulnerable() || BoardView->IsAnimating())
+	{
+		return;
+	}
+	RotationColliderEvents->OnToggleRotationColliders.Broadcast(false);
+
 	BoardCorner corner = BoardCorner::TopRight;
 	if (CornerName == FName("TopRight"))
 	{
@@ -32,12 +50,6 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 		? CornerRotation::CounterClockwise
 		: CornerRotation::Clockwise;
 
-	// Ignore rotations while rotating
-	if (BoardView->IsAnimating())
-	{
-		return;
-	}
-
 	Board.RotateCorner(corner, rotation);
 	BoardView->AnimateRotation(corner, rotation, RotationAnimationDuration);
 }
@@ -56,6 +68,24 @@ void ABoss3Controller::EndVulnerability()
 
 void ABoss3Controller::RandomizeBoard()
 {
+	RotationColliderEvents->OnToggleRotationColliders.Broadcast(false);
 	Board.RandomizeBoard();
 	BoardView->SetPattern(Board, RandomizePiecesAnimationDuration);
+}
+
+void ABoss3Controller::CheckVulerability()
+{
+	if (Board.HasLine())
+	{
+		BecomeVulnerable();
+	}
+	else
+	{
+		RotationColliderEvents->OnToggleRotationColliders.Broadcast(true);
+	}
+}
+
+void ABoss3Controller::OnSetPatternAnimationEnd()
+{
+	RotationColliderEvents->OnToggleRotationColliders.Broadcast(true);
 }

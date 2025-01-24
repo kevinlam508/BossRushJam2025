@@ -9,6 +9,7 @@
 #include "DamageType_A.h"
 #include "DamageType_B.h"
 #include "TimerManager.h"
+#include "RotationColliderEvents.h"
 #include "PuzzleBoardViewComponent.h"
 #include "Boss3Controller.generated.h"
 
@@ -32,6 +33,9 @@ public:
 	void OnPossess_Implementation(AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
+	void OnUnPossess_Implementation();
+
+	UFUNCTION(BlueprintCallable)
 	void RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType);
 
 	virtual void Setup(float Duration) override;
@@ -40,6 +44,13 @@ private:
 
 	PuzzleBoard Board;
 	TObjectPtr<UPuzzleBoardViewComponent> BoardView;
+	TObjectPtr<URotationColliderEvents> RotationColliderEvents;
 
 	void RandomizeBoard();
+
+	UFUNCTION()
+	void CheckVulerability();
+
+	UFUNCTION()
+	void OnSetPatternAnimationEnd();
 };

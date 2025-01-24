@@ -9,6 +9,8 @@
 #include "TimerManager.h"
 #include "PuzzleBoardViewComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnimationEnd);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UPuzzleBoardViewComponent : public USceneComponent
 {
@@ -17,6 +19,12 @@ class SPINNINGGAME_API UPuzzleBoardViewComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UPuzzleBoardViewComponent();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAnimationEnd OnRotationEnd;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAnimationEnd OnSetPatternEnd;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle Board")
 	float PieceDistance = 270;

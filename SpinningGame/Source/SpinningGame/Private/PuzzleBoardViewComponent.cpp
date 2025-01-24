@@ -159,12 +159,14 @@ void UPuzzleBoardViewComponent::FinishSetPattern()
 				SetPatternDestinations[y * PuzzleBoard::Size + x]);
 		}
 	}
+
+	OnSetPatternEnd.Broadcast();
 }
 
 void UPuzzleBoardViewComponent::AnimateRotation(BoardCorner Corner, CornerRotation Rotation, float Duration)
 {
-	int x;
-	int y;
+	int x = 0;
+	int y = 0;
 	switch (Corner)
 	{
 		case BoardCorner::TopLeft:
@@ -301,5 +303,7 @@ void UPuzzleBoardViewComponent::FinishAnimation()
 		);
 		AnimatingTiles[i] = nullptr;
 	}
+
+	OnRotationEnd.Broadcast();
 }
 

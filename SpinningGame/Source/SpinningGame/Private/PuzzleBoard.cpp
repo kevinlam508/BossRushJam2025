@@ -50,9 +50,8 @@ void PuzzleBoard::LogBoard() const
 
 void PuzzleBoard::RotateCorner(BoardCorner Corner, CornerRotation Rotation)
 {
-	int x;
-	int y;
-
+	int x = 0;
+	int y = 0;
 	switch (Corner)
 	{
 		case BoardCorner::TopLeft:
@@ -78,12 +77,12 @@ void PuzzleBoard::RotateCorner(BoardCorner Corner, CornerRotation Rotation)
 
 bool PuzzleBoard::HasLine() const
 {
-	return (Grid[0][0] == Grid[0][1] == Grid[0][2])
-		|| (Grid[1][0] == Grid[1][1] == Grid[1][2])
-		|| (Grid[2][0] == Grid[2][1] == Grid[2][2])
-		|| (Grid[0][0] == Grid[1][0] == Grid[2][0])
-		|| (Grid[0][1] == Grid[1][1] == Grid[2][1])
-		|| (Grid[0][2] == Grid[1][2] == Grid[2][2]);
+	return (Grid[0][0] == Grid[0][1] && Grid[0][1] == Grid[0][2])
+		|| (Grid[1][0] == Grid[1][1] && Grid[1][1] == Grid[1][2])
+		|| (Grid[2][0] == Grid[2][1] && Grid[2][1] == Grid[2][2])
+		|| (Grid[0][0] == Grid[1][0] && Grid[1][0] == Grid[2][0])
+		|| (Grid[0][1] == Grid[1][1] && Grid[1][1] == Grid[2][1])
+		|| (Grid[0][2] == Grid[1][2] && Grid[1][2] == Grid[2][2]);
 }
 
 int PuzzleBoard::GetValue(int X, int Y) const
