@@ -315,7 +315,8 @@ void ABoss1Controller::AbortAttack2()
 void ABoss1Controller::Attack2ChargeUp()
 {
 	FTimerManager& timerManager = GetPawn()->GetWorldTimerManager();
-	Attack2ChargeTime += timerManager.GetTimerElapsed(Attack2ChargeTimer);
+	float elapsed = timerManager.GetTimerElapsed(Attack2ChargeTimer);
+	Attack2ChargeTime += elapsed;
 	
 	if (Attack2ChargeTime > Attack2ChargeDuration)
 	{
@@ -323,18 +324,31 @@ void ABoss1Controller::Attack2ChargeUp()
 		Attack2IndicatorInstance->Destroy();
 		Attack2IndicatorInstance = nullptr;
 		Attack2BeginDash();
+		return;
 	}
-	else
+
+	// Within aim timer
+	if (Attack2ChargeTime < Attack2AimDuration)
 	{
-		// Change animation
-		// TEMP: make the boss spin around
-		GetPawn()->AddActorWorldRotation(FQuat(0, 0, 1, 0));
-		
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		FVector towardsPlayer = player->GetActorLocation()
 			- GetPawn()->GetActorLocation();
-		Attack2IndicatorInstance->SetActorRotation(towardsPlayer.Rotation());
+		towardsPlayer.Z = 0;
+		towardsPlayer.Normalize();
+		Attack2Aim = towardsPlayer;
+		Attack2IndicatorInstance->SetActorRotation(Attack2Aim.Rotation());
 	}
+
+	// Charge animation
+	// TEMP: make the boss spin around
+	float scalar = Attack2ChargeTime / Attack2ChargeDuration;
+	float rotationSpeed = Attack2ChargeRotationSpeed->GetFloatValue(scalar);
+	GetPawn()->AddActorWorldRotation(
+		FRotator(0, 
+			rotationSpeed * elapsed,
+			0)
+	);
+
 }
 
 void ABoss1Controller::Attack2BeginDash()
@@ -344,12 +358,7 @@ void ABoss1Controller::Attack2BeginDash()
 	// Start at starting speed and go towards player
 	BounceMove->Speed = Attack2SpeedCurve->GetFloatValue(0);
 	
-	ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	FVector towardsPlayer = player->GetActorLocation()
-		- GetPawn()->GetActorLocation();
-	towardsPlayer.Z = 0;
-	towardsPlayer.Normalize();
-	BounceMove->MoveTowards(towardsPlayer);
+	BounceMove->MoveTowards(Attack2Aim);
 
 	// Start timer to slow speed along curve
 	Attack2DashTime = 0;

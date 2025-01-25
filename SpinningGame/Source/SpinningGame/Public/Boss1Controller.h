@@ -64,9 +64,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	float Attack2ChargeDuration = 5;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	float Attack2AimDuration = 3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	UCurveFloat* Attack2SpeedCurve;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	float Attack2DashDuration = 25;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
+	UCurveFloat* Attack2ChargeRotationSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	TSubclassOf<AActor> Attack2Indicator;
 
@@ -75,7 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
 	float DashPushVelocityMultiplier = 1.1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 2")
-	float DashPushUpwardsVelocity = 10;
+	float DashPushUpwardsVelocity = 50;
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
@@ -126,6 +130,7 @@ private:
 	FTimerHandle Attack2DashTimer;
 	float Attack2ChargeTime;
 	float Attack2DashTime;
+	FVector Attack2Aim;
 	void BeginAttack2();
 	void AbortAttack2();
 	void Attack2ChargeUp();
