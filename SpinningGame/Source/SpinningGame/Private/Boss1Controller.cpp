@@ -387,6 +387,11 @@ void ABoss1Controller::DashCollision(UPrimitiveComponent* OverlappedComponent, A
 	{
 		return;
 	}
+	// Only damage the main collider of player
+	if (!OtherComp->ComponentHasTag(FName("Main")))
+	{
+		return;
+	}
 
 	ACharacter* player = Cast<ACharacter>(OtherActor);
 	PushPlayer(player, BounceMove->GetDirection(), BounceMove->Speed);

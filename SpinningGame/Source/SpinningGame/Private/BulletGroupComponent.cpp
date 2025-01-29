@@ -97,11 +97,15 @@ void UBulletGroupComponent::OnBulletOverlap(UPrimitiveComponent* OverlappedCompo
 {
 	if (OtherActor->ActorHasTag(FName("Player")))
 	{
-		FDamageEvent event;
-		OtherActor->TakeDamage(Damage,
-			event,
-			nullptr,
-			nullptr);
+		// Only damage the main collider of player
+		if (OtherComp->ComponentHasTag(FName("Main")))
+		{
+			FDamageEvent event;
+			OtherActor->TakeDamage(Damage,
+				event,
+				nullptr,
+				nullptr);
+		}
 	}
 
 	if (OverlappedComponent != nullptr)

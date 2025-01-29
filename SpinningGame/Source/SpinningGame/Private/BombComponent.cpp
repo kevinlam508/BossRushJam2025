@@ -60,6 +60,11 @@ void UBombComponent::Detonate()
 				continue;
 			}
 
+			// Only damage the main collider of player
+			if (!result.Component->ComponentHasTag(FName("Main")))
+			{
+				continue;
+			}
 			FDamageEvent damageEvent;
 			hitActor->TakeDamage(
 				Damage,
