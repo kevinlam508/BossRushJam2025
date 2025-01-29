@@ -402,7 +402,18 @@ void ABoss3Controller::AbortAttack0()
 
 	for (const auto& pair : Attack0BombGrid)
 	{
-		pair.Value->GetOwner()->Destroy();
+		UBombComponent* component = pair.Value;
+		if (component->IsBeingDestroyed())
+		{
+			continue;
+		}
+
+		AActor* actor = component->GetOwner();
+		if (actor->IsActorBeingDestroyed())
+		{
+			continue;
+		}
+		actor->Destroy();
 	}
 	Attack0BombGrid.Empty();
 }
