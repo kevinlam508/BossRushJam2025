@@ -7,6 +7,8 @@
 #include "GameFramework/Character.h"
 #include "BaseBossController.h"
 #include "PuzzleBoard.h"
+#include "BombComponent.h"
+#include "MoveStraight.h"
 #include "DamageType_A.h"
 #include "DamageType_B.h"
 #include "TimerManager.h"
@@ -62,9 +64,32 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType);
 
+	virtual int GetTotalAttacks() const override;
 	virtual void Setup(float Duration) override;
 	virtual void BeginVulnerability() override;
 	virtual void EndVulnerability() override;
+	virtual void BeginAttack(int Number) override;
+	virtual void AbortAttack(int Number) override;
+	virtual void EndAttack(int Number) override;
+
+	// Attack 0
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	TSubclassOf<AActor> Attack0BombABP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	TSubclassOf<AActor> Attack0BombBBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0GridSpacing;	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	int Attack0GridHalfExtentX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	int Attack0GridHalfExtentY;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0BombSpawnHeight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	float Attack0BombDropDelay = 2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
+	int Attack0BombDetonateLineLength = 3;
+
 private:
 
 	PuzzleBoard Board;
@@ -82,4 +107,13 @@ private:
 	// Vulnerability animation
 	AnimationData<FVector> VulnerabilityAnimation;
 	void TickVulnerabilityPositionSwap();
+
+	// Attack0
+	float Attack0GroundCheckTolerance = 1.5;
+	FTimerHandle Attack0BombDropTimer;
+	TMap<FVector, UBombComponent*> Attack0BombGrid;
+	void BeginAttack0();
+	void EndAttack0();
+	void AbortAttack0();
+	void Attack0SpawnBomb();
 };

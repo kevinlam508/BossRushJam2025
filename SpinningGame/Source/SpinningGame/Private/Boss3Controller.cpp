@@ -3,6 +3,7 @@
 
 #include "Boss3Controller.h"
 
+
 void ABoss3Controller::OnPossess_Implementation(AActor* Actor)
 {
 	BoardView = Actor->GetComponentByClass<UPuzzleBoardViewComponent>();
@@ -54,10 +55,44 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 	BoardView->AnimateRotation(corner, rotation, RotationAnimationDuration);
 }
 
+int ABoss3Controller::GetTotalAttacks() const
+{
+	return 1;
+}
+
 void ABoss3Controller::Setup(float Duration)
 {
 	Super::Setup(Duration);
 	RandomizeBoard();
+}
+
+void ABoss3Controller::BeginAttack(int Number)
+{
+	switch (Number)
+	{
+	case 0:
+		BeginAttack0();
+	}
+}
+
+void ABoss3Controller::AbortAttack(int Number)
+{
+
+	switch (Number)
+	{
+	case 0:
+		AbortAttack0();
+	}
+}
+
+void ABoss3Controller::EndAttack(int Number)
+{
+	switch (Number)
+	{
+	case 0:
+		EndAttack0();
+	}
+	Super::EndAttack(Number);
 }
 
 void ABoss3Controller::BeginVulnerability()
@@ -162,4 +197,212 @@ void ABoss3Controller::TickVulnerabilityPositionSwap()
 			scalar
 		)
 	);
+}
+
+void ABoss3Controller::Attack0SpawnBomb()
+{
+	// Find an empty spot
+	FVector gridIndex;
+	gridIndex.X = FMath::RandRange(-Attack0GridHalfExtentX + 1, Attack0GridHalfExtentX - 1);
+	gridIndex.Y = FMath::RandRange(-Attack0GridHalfExtentY + 1, Attack0GridHalfExtentY - 1);
+	gridIndex.Z = 0;
+	while (Attack0BombGrid.Contains(gridIndex)
+		|| (FMath::Abs(gridIndex.X) < 2 && FMath::Abs(gridIndex.Y) < 2))
+	{
+		gridIndex.X = FMath::RandRange(-Attack0GridHalfExtentX + 1, Attack0GridHalfExtentX - 1);
+		gridIndex.Y = FMath::RandRange(-Attack0GridHalfExtentY + 1, Attack0GridHalfExtentY - 1);
+	}
+
+	FVector actorLocation = GetPawn()->GetActorLocation();
+	actorLocation.Z = 0;
+	FVector spawnLocation = (gridIndex * Attack0GridSpacing)
+		 + actorLocation;
+	spawnLocation.Z = Attack0BombSpawnHeight;
+
+	int bombNumber = FMath::RandRange(0, 1);
+	TSubclassOf<AActor> toSpawn = bombNumber == 0
+		? Attack0BombABP
+		: Attack0BombBBP;
+
+	// Spawn
+	AActor* newInstance = GetWorld()->SpawnActor(
+		toSpawn,
+		&spawnLocation
+	);
+	UBombComponent* component = newInstance->GetComponentByClass<UBombComponent>();
+	Attack0BombGrid.Add(gridIndex, component);
+
+	// Check for lines after delay
+	UMoveStraight* moveStraight = newInstance->GetComponentByClass<UMoveStraight>();
+	float landTime = Attack0BombSpawnHeight / moveStraight->Speed;
+	
+	FTimerDelegate checkDelegate;
+	checkDelegate.BindLambda([&, gridIndex, component]()
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("New Drop %s"), *gridIndex.ToString());
+		float z = component->GetOwner()->GetActorLocation().Z;
+
+		TArray<FVector> horizontallyAdjacent;
+		horizontallyAdjacent.Empty();
+		for (int i = gridIndex.X + 1; i < Attack0GridHalfExtentX; i++)
+		{
+			FVector checkIndex = FVector(i,
+				gridIndex.Y,
+				0);
+
+			// Doesn't exist, break
+			UBombComponent** find = Attack0BombGrid.Find(checkIndex);
+			if (find == nullptr)
+			{
+				break;
+			}
+
+			// HACK: only check pieces at same height to be "on the ground"
+			UBombComponent* neighbor = *find;
+			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
+			if (diff > Attack0GroundCheckTolerance)
+			{
+				break;
+			}
+			horizontallyAdjacent.Add(checkIndex);
+		}
+		for (int i = gridIndex.X - 1; i > -Attack0GridHalfExtentX; i--)
+		{
+			FVector checkIndex = FVector(i,
+				gridIndex.Y,
+				0);
+
+			// Doesn't exist, break
+			UBombComponent** find = Attack0BombGrid.Find(checkIndex);
+			if (find == nullptr)
+			{
+				break;
+			}
+
+			// HACK: only check pieces at same height to be "on the ground"
+			UBombComponent* neighbor = *find;
+			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
+			if (diff > Attack0GroundCheckTolerance)
+			{
+				break;
+			}
+			horizontallyAdjacent.Add(checkIndex);
+		}
+
+		TArray<FVector> verticallyAdjacent;
+		verticallyAdjacent.Empty();
+		for (int i = gridIndex.Y + 1; i < Attack0GridHalfExtentY; i++)
+		{
+			FVector checkIndex = FVector(
+				gridIndex.X,
+				i,
+				0);
+			
+			// Doesn't exist, break
+			UBombComponent** find = Attack0BombGrid.Find(checkIndex);
+			if (find == nullptr)
+			{
+				break;
+			}
+
+			// HACK: only check pieces at same height to be "on the ground"
+			UBombComponent* neighbor = *find;
+			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
+			if (diff > Attack0GroundCheckTolerance)
+			{
+				break;
+			}
+			verticallyAdjacent.Add(checkIndex);
+		}
+		for (int i = gridIndex.Y - 1; i > -Attack0GridHalfExtentY; i--)
+		{
+			FVector checkIndex = FVector(
+				gridIndex.X,
+				i,
+				0);
+			// Doesn't exist, break
+			UBombComponent** find = Attack0BombGrid.Find(checkIndex);
+			if (find == nullptr)
+			{
+				break;
+			}
+
+			// HACK: only check pieces at same height to be "on the ground"
+			UBombComponent* neighbor = *find;
+			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
+			if (diff > Attack0GroundCheckTolerance)
+			{
+				break;
+			}
+			verticallyAdjacent.Add(checkIndex);
+		}
+
+		if (horizontallyAdjacent.Num() + 1 >= Attack0BombDetonateLineLength
+			|| verticallyAdjacent.Num() + 1 >= Attack0BombDetonateLineLength)
+		{
+			UBombComponent* bomb = Attack0BombGrid.FindAndRemoveChecked(gridIndex);
+			bomb->Detonate();
+		}
+
+		if (horizontallyAdjacent.Num() + 1 >= Attack0BombDetonateLineLength)
+		{
+			for (const FVector& index : horizontallyAdjacent)
+			{
+				UBombComponent* bomb = Attack0BombGrid.FindAndRemoveChecked(index);
+				bomb->Detonate();
+			}
+		}
+		if (verticallyAdjacent.Num() + 1 >= Attack0BombDetonateLineLength)
+		{
+			for (const FVector& index : verticallyAdjacent)
+			{
+				UBombComponent* bomb = Attack0BombGrid.FindAndRemoveChecked(index);
+				bomb->Detonate();
+			}
+		}
+	});
+	FTimerHandle handle;
+	FTimerManager& timerManager = GetWorldTimerManager();
+	timerManager.SetTimer
+	(
+		handle,
+		checkDelegate,
+		landTime + 0.05, // extra buffer to let ground check work
+		false
+	);
+}
+
+void ABoss3Controller::BeginAttack0()
+{
+	FTimerManager& timerManager = GetWorldTimerManager();
+	timerManager.SetTimer
+	(
+		Attack0BombDropTimer,
+		this,
+		&ABoss3Controller::Attack0SpawnBomb,
+		Attack0BombDropDelay,
+		true
+	);
+}
+
+void ABoss3Controller::EndAttack0()
+{
+	for (const auto& pair : Attack0BombGrid)
+	{
+		pair.Value->Detonate();
+	}
+	Attack0BombGrid.Empty();
+}
+
+void ABoss3Controller::AbortAttack0()
+{
+	FTimerManager& timerManager = GetWorldTimerManager();
+	timerManager.ClearTimer(Attack0BombDropTimer);
+
+	for (const auto& pair : Attack0BombGrid)
+	{
+		pair.Value->GetOwner()->Destroy();
+	}
+	Attack0BombGrid.Empty();
 }
