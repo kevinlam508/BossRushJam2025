@@ -6,10 +6,6 @@
 void ABaseBossController::OnPossess_Implementation(AActor* Actor)
 {
 	Events = Actor->GetComponentByClass<UBossControllerEvents>();
-	if (Events != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Events found"));
-	}
 }
 
 void ABaseBossController::Setup(float Duration)
