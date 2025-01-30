@@ -56,7 +56,7 @@ public:
 	float ExitVulnerabilityKnockback = 3000;
 
 	UFUNCTION(BlueprintCallable)
-	void OnPossess_Implementation(AActor* Actor);
+	void OnPossess_Implementation(AActor* Actor) override;
 
 	UFUNCTION(BlueprintCallable)
 	void OnUnPossess_Implementation();

@@ -19,6 +19,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "Curves/CurveFloat.h"
+#include "Boss1ControllerEvents.h"
 #include "Boss1Controller.generated.h"
 
 /**
@@ -30,6 +31,7 @@ class SPINNINGGAME_API ABoss1Controller : public ABaseBossController
 	GENERATED_BODY()
 	
 public:
+
 	// Attack 0
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	TSubclassOf<AActor> Attack0BulletGroupABP;
@@ -85,9 +87,7 @@ public:
 	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
 
 	UFUNCTION(BlueprintCallable)
-	void OnPossess_Implementation(AActor* Actor);
-
-	virtual void Tick(float DeltaTime) override;
+	void OnPossess_Implementation(AActor* Actor) override;
 
 	virtual int GetTotalAttacks() const override;
 	virtual void BeginVulnerability() override;

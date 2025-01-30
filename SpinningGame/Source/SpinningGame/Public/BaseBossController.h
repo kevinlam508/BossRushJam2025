@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BossControllerEvents.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BaseBossController.generated.h"
 
@@ -16,6 +17,8 @@ class SPINNINGGAME_API ABaseBossController : public AAIController
 	GENERATED_BODY()
 	
 public:
+	virtual void OnPossess_Implementation(AActor* Actor);
+
 	virtual void Setup(float Duration);
 	virtual void BeginVulnerability();
 	virtual void EndVulnerability();
@@ -24,6 +27,8 @@ public:
 	virtual void AbortAttack(int Number);
 
 protected:
+	TObjectPtr<UBossControllerEvents> Events;
+
 	// Attack changing
 	virtual int GetTotalAttacks() const;
 	void PickRandomAttack();

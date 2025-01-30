@@ -26,6 +26,8 @@ void ABoss1Controller::ProcessDamage(float Amount, TSubclassOf<UDamageType> Type
 
 void ABoss1Controller::OnPossess_Implementation(AActor* Actor)
 {
+	Super::OnPossess_Implementation(Actor);
+
 	Health = Actor->GetComponentByClass<UHealthComponent>();
 	BounceMove = Actor->GetComponentByClass<UBounceMovement>();
 	FollowActor = Actor->GetComponentByClass<UFollowActor>();
@@ -40,11 +42,6 @@ void ABoss1Controller::OnPossess_Implementation(AActor* Actor)
 	SwitchWeakness();
 }
 
-void ABoss1Controller::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 int ABoss1Controller::GetTotalAttacks() const
 {
 	return 3;
@@ -53,6 +50,7 @@ int ABoss1Controller::GetTotalAttacks() const
 void ABoss1Controller::BeginVulnerability()
 {
 	StopMovement();
+	Super::BeginVulnerability();
 }
 
 void ABoss1Controller::EndVulnerability()
@@ -63,6 +61,7 @@ void ABoss1Controller::EndVulnerability()
 	{
 		Invincibility->StartInvincibility();
 	}
+	Super::EndVulnerability();
 }
 
 void ABoss1Controller::BeginAttack(int Number)
@@ -80,6 +79,7 @@ void ABoss1Controller::BeginAttack(int Number)
 			BeginAttack2();
 			break;
 	}
+	Super::BeginAttack(Number);
 }
 
 void ABoss1Controller::AbortAttack(int Number)
@@ -97,6 +97,7 @@ void ABoss1Controller::AbortAttack(int Number)
 			AbortAttack2();
 			break;
 	}
+	Super::AbortAttack(Number);
 }
 
 void ABoss1Controller::SwitchWeakness()
@@ -104,10 +105,17 @@ void ABoss1Controller::SwitchWeakness()
 	if (CurrentWeakness == UDamageType_A::StaticClass())
 	{
 		CurrentWeakness = UDamageType_B::StaticClass();
+		
+		TObjectPtr<UBoss1ControllerEvents> events = Cast<UBoss1ControllerEvents>(Events);
+		if (events != nullptr)
+			events->OnVulnerabilityChange.Broadcast(true);
 	}
 	else 
 	{
 		CurrentWeakness = UDamageType_A::StaticClass();
+		TObjectPtr<UBoss1ControllerEvents> events = Cast<UBoss1ControllerEvents>(Events);
+		if (events != nullptr)
+			events->OnVulnerabilityChange.Broadcast(false);
 	}
 }
 
@@ -184,9 +192,10 @@ void ABoss1Controller::BeginAttack0()
 void ABoss1Controller::TickAttack0()
 {
 	// Determine attack based on weakness
-	TSubclassOf<AActor> attackBP = (CurrentWeakness != UDamageType_A::StaticClass()
+	bool isBWeakness = CurrentWeakness != UDamageType_A::StaticClass();
+	TSubclassOf<AActor> attackBP = (isBWeakness
 		? Attack0BulletGroupABP : Attack0BulletGroupBBP);
-	TArray<FLocationList> bulletPattern = (CurrentWeakness != UDamageType_A::StaticClass()
+	TArray<FLocationList> bulletPattern = (isBWeakness
 		? Attack0PatternA : Attack0PatternB);
 	
 	if (attackBP == nullptr)
@@ -211,6 +220,9 @@ void ABoss1Controller::TickAttack0()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Missing move straight component"));
 	}
+	TObjectPtr<UBoss1ControllerEvents> events = Cast<UBoss1ControllerEvents>(Events);
+	if (events != nullptr)
+		events->OnShoot.Broadcast(isBWeakness);
 }
 
 void ABoss1Controller::AbortAttack0()
@@ -341,7 +353,9 @@ void ABoss1Controller::Attack2ChargeUp()
 
 	// Charge animation
 	// TEMP: make the boss spin around
-	float scalar = Attack2ChargeTime / Attack2ChargeDuration;
+	float sign = CurrentWeakness == UDamageType_A::StaticClass()
+		? -1 : 1;
+	float scalar = sign * Attack2ChargeTime / Attack2ChargeDuration;
 	float rotationSpeed = Attack2ChargeRotationSpeed->GetFloatValue(scalar);
 	GetPawn()->AddActorWorldRotation(
 		FRotator(0, 

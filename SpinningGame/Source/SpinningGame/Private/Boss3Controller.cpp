@@ -6,6 +6,8 @@
 
 void ABoss3Controller::OnPossess_Implementation(AActor* Actor)
 {
+	Super::OnPossess_Implementation(Actor);
+
 	BoardView = Actor->GetComponentByClass<UPuzzleBoardViewComponent>();
 	RotationColliderEvents = Actor->GetComponentByClass<URotationColliderEvents>();
 	
@@ -73,6 +75,7 @@ void ABoss3Controller::BeginAttack(int Number)
 	case 0:
 		BeginAttack0();
 	}
+	Super::BeginAttack(Number);
 }
 
 void ABoss3Controller::AbortAttack(int Number)
@@ -83,6 +86,7 @@ void ABoss3Controller::AbortAttack(int Number)
 	case 0:
 		AbortAttack0();
 	}
+	Super::AbortAttack(Number);
 }
 
 void ABoss3Controller::EndAttack(int Number)
@@ -97,8 +101,6 @@ void ABoss3Controller::EndAttack(int Number)
 
 void ABoss3Controller::BeginVulnerability()
 {
-	Super::BeginVulnerability();
-
 	VulnerabilityAnimation.TimePassed = 0;
 	VulnerabilityAnimation.Duration = VulnerabilityRiseFallDuration;
 	VulnerabilityAnimation.StartValue = InvulernablePosition;
@@ -111,11 +113,12 @@ void ABoss3Controller::BeginVulnerability()
 		1.0 / 60,
 		true
 	);
+
+	Super::BeginVulnerability();
 }
 
 void ABoss3Controller::EndVulnerability()
 {
-	Super::EndVulnerability();
 	FTimerManager& timerManager = GetWorldTimerManager();
 
 	// Knock player away from board
@@ -152,6 +155,7 @@ void ABoss3Controller::EndVulnerability()
 	);
 
 	RandomizeBoard();
+	Super::EndVulnerability();
 }
 
 void ABoss3Controller::RandomizeBoard()

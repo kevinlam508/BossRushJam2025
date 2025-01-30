@@ -3,6 +3,15 @@
 
 #include "BaseBossController.h"
 
+void ABaseBossController::OnPossess_Implementation(AActor* Actor)
+{
+	Events = Actor->GetComponentByClass<UBossControllerEvents>();
+	if (Events != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Events found"));
+	}
+}
+
 void ABaseBossController::Setup(float Duration)
 {
 	UBlackboardComponent* blackboard = GetBlackboardComponent();
@@ -13,18 +22,26 @@ void ABaseBossController::Setup(float Duration)
 
 void ABaseBossController::BeginVulnerability()
 {
+	if (Events != nullptr)
+		Events->OnVulnerableBegin.Broadcast();
 }
 
 void ABaseBossController::EndVulnerability()
 {
+	if (Events != nullptr)
+		Events->OnVulnerableEnd.Broadcast();
 }
 
 void ABaseBossController::BeginAttack(int Number)
 {
+	if (Events != nullptr)
+		Events->OnAttackBegin.Broadcast(Number);
 }
 
 void ABaseBossController::AbortAttack(int Number)
 {
+	if (Events != nullptr)
+		Events->OnAttackAbort.Broadcast(Number);
 }
 
 void ABaseBossController::EndAttack(int Number)
