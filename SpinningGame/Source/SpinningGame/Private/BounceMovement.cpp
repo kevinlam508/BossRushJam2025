@@ -79,8 +79,8 @@ void UBounceMovement::HandleWallBounce(AActor* OtherActor, const FHitResult& Hit
 	}
 	
 	FVector normal = Hit.Normal;
+	normal.Z = 0; // Don't bounce along z
 	BounceMoveDirection = FMath::GetReflectionVector(BounceMoveDirection, normal);
-
 }
 
 void UBounceMovement::HandlePlayerHit(AActor* OtherActor, const FHitResult& Hit)
