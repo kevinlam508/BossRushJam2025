@@ -23,4 +23,6 @@ public:
 	FTypeEvent OnVulnerabilityChange;
 	UPROPERTY(BlueprintAssignable)
 	FTypeEvent OnShoot;
+	UPROPERTY(BlueprintAssignable)
+	FOnStateChange OnAttack2ChargeComplete;
 };

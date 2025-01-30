@@ -335,7 +335,11 @@ void ABoss1Controller::Attack2ChargeUp()
 		timerManager.ClearTimer(Attack2ChargeTimer);
 		Attack2IndicatorInstance->Destroy();
 		Attack2IndicatorInstance = nullptr;
+
 		Attack2BeginDash();
+		TObjectPtr<UBoss1ControllerEvents> events = Cast<UBoss1ControllerEvents>(Events);
+		if (events != nullptr)
+			events->OnAttack2ChargeComplete.Broadcast();
 		return;
 	}
 
