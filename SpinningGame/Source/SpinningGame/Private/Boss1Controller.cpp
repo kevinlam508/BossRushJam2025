@@ -359,8 +359,8 @@ void ABoss1Controller::Attack2ChargeUp()
 	// TEMP: make the boss spin around
 	float sign = CurrentWeakness == UDamageType_A::StaticClass()
 		? -1 : 1;
-	float scalar = sign * Attack2ChargeTime / Attack2ChargeDuration;
-	float rotationSpeed = Attack2ChargeRotationSpeed->GetFloatValue(scalar);
+	float scalar = Attack2ChargeTime / Attack2ChargeDuration;
+	float rotationSpeed = sign * Attack2ChargeRotationSpeed->GetFloatValue(scalar);
 	GetPawn()->AddActorWorldRotation(
 		FRotator(0, 
 			rotationSpeed * elapsed,
