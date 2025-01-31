@@ -134,5 +134,6 @@ void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, 
 		event,
 		pawn != nullptr ? pawn->GetController() : nullptr,
 		actor);
+	OnSwingHit.Broadcast(SweepResult.Location);
 }
 

@@ -20,6 +20,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingBegin);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingEnd);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnSwingHit,
+	FVector,
+	Location
+);
+
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UOrbitingWeapon : public USceneComponent
@@ -32,13 +38,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingBegin OnASwingBegin;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingBegin OnBSwingBegin;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingEnd OnSwingEnd;
-
+	UPROPERTY(BlueprintAssignable)
+	FOnSwingHit OnSwingHit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	float SwingDuration = 0.3;
