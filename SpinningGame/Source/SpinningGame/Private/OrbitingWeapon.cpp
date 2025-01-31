@@ -83,6 +83,8 @@ void UOrbitingWeapon::SwingA()
 {
 	if (!CanSwing())
 	{
+		// Released during CD, don't charge
+		StartChargeAfterCooldown = false;
 		return;
 	}
 	// If super swing activated, don't normal swing
@@ -100,6 +102,8 @@ void UOrbitingWeapon::SwingB()
 {
 	if (!CanSwing())
 	{
+		// Released during CD, don't charge
+		StartChargeAfterCooldown = false;
 		return;
 	}
 	// If super swing activated, don't normal swing
@@ -117,7 +121,7 @@ void UOrbitingWeapon::ChargeSwingSuper()
 {
 	// Start tracking the swing after CD so input isn't
 	// "eaten"
-	if (IsSwinging())
+	if (!CanSwing())
 	{
 		StartChargeAfterCooldown = true;
 		return;
@@ -168,7 +172,6 @@ bool UOrbitingWeapon::TryActivateSuperSwing()
 		timerManager.ClearTimer(SuperSwingChargeTimer);
 		result = false;
 
-		StartChargeAfterCooldown = false;
 		OnSuperSwingCancel.Broadcast();
 	}
 	SuperSwingState = ChargeState::NoCharge;
