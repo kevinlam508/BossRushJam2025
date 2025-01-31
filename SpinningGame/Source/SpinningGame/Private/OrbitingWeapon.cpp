@@ -71,6 +71,11 @@ void UOrbitingWeapon::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	else
 	{
 		CurrentSpin = SpinDirection::None;
+		if (StartChargeAfterCooldown)
+		{
+			StartChargeAfterCooldown = false;
+			ChargeSwingSuper();
+		}
 	}
 }
 
@@ -110,10 +115,19 @@ void UOrbitingWeapon::SwingB()
 
 void UOrbitingWeapon::ChargeSwingSuper()
 {
-	if (!CanSwing())
+	// Start tracking the swing after CD so input isn't
+	// "eaten"
+	if (IsSwinging())
+	{
+		StartChargeAfterCooldown = true;
+		return;
+	}
+
+	if (SuperSwingState != ChargeState::NoCharge)
 	{
 		return;
 	}
+
 	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
 	timerManager.SetTimer(
 		SuperSwingChargeTimer,
@@ -153,6 +167,9 @@ bool UOrbitingWeapon::TryActivateSuperSwing()
 		FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
 		timerManager.ClearTimer(SuperSwingChargeTimer);
 		result = false;
+
+		StartChargeAfterCooldown = false;
+		OnSuperSwingCancel.Broadcast();
 	}
 	SuperSwingState = ChargeState::NoCharge;
 	return result;

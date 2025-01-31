@@ -59,6 +59,8 @@ public:
 	FOnSwingBegin OnChargeComplete;
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingBegin OnSuperSwingBegin;
+	UPROPERTY(BlueprintAssignable)
+	FOnSwingBegin OnSuperSwingCancel;
 
 
 	UPROPERTY(BlueprintAssignable)
@@ -114,6 +116,7 @@ private:
 		const FHitResult& SweepResult);
 
 	// Super swing 
+	bool StartChargeAfterCooldown;
 	ChargeState SuperSwingState;
 	FTimerHandle SuperSwingChargeTimer;
 	void ChargeComplete();
