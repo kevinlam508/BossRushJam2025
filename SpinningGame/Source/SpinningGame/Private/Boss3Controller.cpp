@@ -23,6 +23,12 @@ void ABoss3Controller::OnUnPossess_Implementation()
 
 void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType)
 {
+	// No damage time, not rotational hit
+	if (DamageType == nullptr)
+	{
+		return;
+	}
+
 	// Only rotate while vulnerable
 	// or not currently rotating
 	if (IsVulnerable() || BoardView->IsAnimating())

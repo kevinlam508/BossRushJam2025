@@ -84,7 +84,7 @@ public:
 	float DashPushUpwardsVelocity = 50;
 
 	UFUNCTION(BlueprintCallable)
-	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type);
+	void ProcessDamage(float Amount, TSubclassOf<UDamageType> Type, FVector Location);
 
 	UFUNCTION(BlueprintCallable)
 	void OnPossess_Implementation(AActor* Actor) override;

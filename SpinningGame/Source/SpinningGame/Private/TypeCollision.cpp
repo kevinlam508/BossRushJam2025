@@ -3,16 +3,6 @@
 
 #include "TypeCollision.h"
 
-// Sets default values for this component's properties
-UTypeCollision::UTypeCollision()
-{
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
-}
-
 
 // Called when the game starts
 void UTypeCollision::BeginPlay()
@@ -32,15 +22,6 @@ void UTypeCollision::BeginPlay()
 	}
 }
 
-
-// Called every frame
-void UTypeCollision::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UTypeCollision::ToA()
 {
 	ChangeToCollisionProfile(ACollisionProfileName);
@@ -54,6 +35,11 @@ void UTypeCollision::ToB()
 void UTypeCollision::ToNeutral()
 {
 	ChangeToCollisionProfile(NeutralCollisionProfileName);
+}
+
+void UTypeCollision::ToSuper()
+{
+	ChangeToCollisionProfile(SuperCollisionProfileName);
 }
 
 void UTypeCollision::ChangeToCollisionProfile(const FName& profileName)

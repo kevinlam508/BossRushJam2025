@@ -7,23 +7,33 @@
 #include "Engine/DamageEvents.h" 
 #include "DamageType_A.h"
 #include "DamageType_B.h"
+#include "TimerManager.h"
 #include "OrbitingWeapon.generated.h"
 
 enum SpinDirection
 {
 	None,
 	A,
-	B
+	B,
+	Super
+};
+enum ChargeState
+{
+	NoCharge,
+	Charging,
+	Charged
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingBegin);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwingEnd);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
 	FOnSwingHit,
 	FVector,
-	Location
+	Location,
+	bool,
+	IsSuperSwing
 );
 
 
@@ -42,6 +52,15 @@ public:
 	FOnSwingBegin OnBSwingBegin;
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingEnd OnSwingEnd;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSwingBegin OnChargeBegin;
+	UPROPERTY(BlueprintAssignable)
+	FOnSwingBegin OnChargeComplete;
+	UPROPERTY(BlueprintAssignable)
+	FOnSwingBegin OnSuperSwingBegin;
+
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSwingHit OnSwingHit;
 
@@ -52,13 +71,23 @@ public:
 	float SwingCooldown = 0.4;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
-	float Damage = 1;
+	float Damage = 2;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Super Attack")
+	float SuperSwingDamage = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Super Attack")
+	float SuperSwingChargeTime = 1;
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwingA();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	void SwingB();
+
+	UFUNCTION(BlueprintCallable, Category = "Orbit")
+	void ChargeSwingSuper();
 
 	UFUNCTION(BlueprintCallable, Category = "Orbit")
 	bool CanSwing();
@@ -83,4 +112,11 @@ private:
 	void WeaponCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult);
+
+	// Super swing 
+	ChargeState SuperSwingState;
+	FTimerHandle SuperSwingChargeTimer;
+	void ChargeComplete();
+	void PerformSuperSwing();
+	bool TryActivateSuperSwing();
 };

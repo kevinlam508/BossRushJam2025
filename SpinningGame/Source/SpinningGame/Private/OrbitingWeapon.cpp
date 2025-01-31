@@ -80,6 +80,12 @@ void UOrbitingWeapon::SwingA()
 	{
 		return;
 	}
+	// If super swing activated, don't normal swing
+	if (TryActivateSuperSwing())
+	{
+		return;
+	}
+
 	ActiveSpinTime = 0;
 	CurrentSpin = SpinDirection::A;
 	OnASwingBegin.Broadcast();
@@ -91,9 +97,65 @@ void UOrbitingWeapon::SwingB()
 	{
 		return;
 	}
+	// If super swing activated, don't normal swing
+	if (TryActivateSuperSwing())
+	{
+		return;
+	}
+
 	ActiveSpinTime = 0;
 	CurrentSpin = SpinDirection::B;
 	OnBSwingBegin.Broadcast();
+}
+
+void UOrbitingWeapon::ChargeSwingSuper()
+{
+	if (!CanSwing())
+	{
+		return;
+	}
+	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+	timerManager.SetTimer(
+		SuperSwingChargeTimer,
+		this,
+		&UOrbitingWeapon::ChargeComplete,
+		SuperSwingChargeTime
+	);
+
+	SuperSwingState = ChargeState::Charging;
+	OnChargeBegin.Broadcast();
+}
+
+void UOrbitingWeapon::PerformSuperSwing()
+{
+	ActiveSpinTime = 0;
+	CurrentSpin = SpinDirection::Super;
+	OnSuperSwingBegin.Broadcast();
+}
+
+void UOrbitingWeapon::ChargeComplete()
+{
+	SuperSwingState = ChargeState::Charged;
+	OnChargeComplete.Broadcast();
+}
+
+bool UOrbitingWeapon::TryActivateSuperSwing()
+{
+	bool result = false;
+	if (SuperSwingState == ChargeState::Charged)
+	{
+		PerformSuperSwing();
+		result = true;
+	}
+	// Canceled the charge by doing an attack
+	else
+	{
+		FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();
+		timerManager.ClearTimer(SuperSwingChargeTimer);
+		result = false;
+	}
+	SuperSwingState = ChargeState::NoCharge;
+	return result;
 }
 
 bool UOrbitingWeapon::CanSwing()
@@ -120,20 +182,45 @@ void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, 
 	AActor* actor = GetOwner();
 	APawn* pawn = Cast<APawn>(actor);
 
-	UClass* damageType = (CurrentSpin == SpinDirection::A 
-		? UDamageType_A::StaticClass()
-		: UDamageType_B::StaticClass());
+	bool isSuperSwing = CurrentSpin == SpinDirection::Super;
+	UClass* damageType = nullptr;
+	switch (CurrentSpin)
+	{
+	case SpinDirection::A:
+		damageType = UDamageType_A::StaticClass();
+		break;
+
+	case SpinDirection::B:
+		damageType = UDamageType_B::StaticClass();
+		break;
+	}
+
+	// Determine point of impact
+	FHitResult hit;
+	FVector traceStart = GetOwner()->GetActorLocation();
+	FVector traceEnd = OtherComp->GetComponentLocation();
+	FCollisionObjectQueryParams objectParams;
+	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4);
+	GetWorld()->LineTraceSingleByObjectType(
+		hit,
+		traceStart,
+		traceEnd,
+		objectParams
+	);
+
+	float damage = isSuperSwing ? SuperSwingDamage : Damage;
 	FPointDamageEvent  event = FPointDamageEvent(
-		Damage,
-		SweepResult,
+		damage,
+		hit,
 		FVector(),
 		TSubclassOf<UDamageType>(damageType)
 	);
 	
-	OtherActor->TakeDamage(Damage,
+	OtherActor->TakeDamage(damage,
 		event,
 		pawn != nullptr ? pawn->GetController() : nullptr,
 		actor);
-	OnSwingHit.Broadcast(SweepResult.Location);
+
+	OnSwingHit.Broadcast(hit.Location, isSuperSwing);
 }
 

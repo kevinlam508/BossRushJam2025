@@ -13,6 +13,16 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	int,
 	AttackNumber);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnHit,
+	FVector,
+	Location,
+	bool,
+	Successful,
+	float,
+	Amount
+);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UBossControllerEvents : public UActorComponent
 {
@@ -20,6 +30,8 @@ class SPINNINGGAME_API UBossControllerEvents : public UActorComponent
 
 public:	
 
+	UPROPERTY(BlueprintAssignable)
+	FOnHit OnHit;
 	UPROPERTY(BlueprintAssignable)
 	FOnStateChange OnVulnerableBegin;
 	UPROPERTY(BlueprintAssignable)

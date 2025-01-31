@@ -13,8 +13,6 @@ class SPINNINGGAME_API UTypeCollision : public USceneComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
-	UTypeCollision();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	FName ACollisionProfileName;
@@ -25,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
 	FName NeutralCollisionProfileName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbit Controls")
+	FName SuperCollisionProfileName;
+
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
 	void ToA();
 
@@ -34,13 +35,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
 	void ToNeutral();
 
+	UFUNCTION(BlueprintCallable, Category = "Collision Color Change")
+	void ToSuper();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private: 
 

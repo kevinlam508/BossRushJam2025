@@ -3,24 +3,37 @@
 
 #include "Boss1Controller.h"
 
-void ABoss1Controller::ProcessDamage(float Amount, TSubclassOf<UDamageType> Type)
+void ABoss1Controller::ProcessDamage(float Amount, TSubclassOf<UDamageType> Type, FVector Location)
 {
 	if (Invincibility != nullptr 
 		&& Invincibility->GetIsInvincible())
 	{
+		if (Events != nullptr)
+		{
+			Events->OnHit.Broadcast(Location, false, 0);
+		}
 		return;
 	}
 
+	bool hitSuccess = false;
+	float amount = 0;
 	if (IsVulnerable())
 	{
 		if (Health != nullptr)
 		{
 			Health->TakeDamage(Amount);
 		}
+		hitSuccess = true;
+		amount = Amount;
 	}
 	else if (Type == CurrentWeakness)
 	{
 		BecomeVulnerable();
+		hitSuccess = true;
+	}
+	if (Events != nullptr)
+	{
+		Events->OnHit.Broadcast(Location, hitSuccess, amount);
 	}
 }
 
