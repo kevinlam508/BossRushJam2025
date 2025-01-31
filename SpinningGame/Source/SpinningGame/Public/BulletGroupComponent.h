@@ -8,6 +8,12 @@
 #include "TimerManager.h"
 #include "BulletGroupComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnBulletDestroy,
+	FVector,
+	Location
+);
+
 USTRUCT(BlueprintType)
 struct FLocationList
 {
@@ -31,6 +37,9 @@ class SPINNINGGAME_API UBulletGroupComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UBulletGroupComponent();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnBulletDestroy OnBulletDestroy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
 	float SpawnInAnimationDuration = 0.3;

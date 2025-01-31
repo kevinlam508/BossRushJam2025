@@ -111,6 +111,7 @@ void UBulletGroupComponent::OnBulletOverlap(UPrimitiveComponent* OverlappedCompo
 	if (OverlappedComponent != nullptr)
 	{
 		OverlappedComponent->OnComponentBeginOverlap.RemoveDynamic(this, &UBulletGroupComponent::OnBulletOverlap);
+		OnBulletDestroy.Broadcast(OverlappedComponent->GetComponentLocation());
 	}
 	// Destroy bullets as they collide
 	DestroyedBulletCount++;
