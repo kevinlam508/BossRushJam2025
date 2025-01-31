@@ -59,7 +59,7 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 
 int ABoss3Controller::GetTotalAttacks() const
 {
-	return 1;
+	return 2;
 }
 
 void ABoss3Controller::Setup(float Duration)
@@ -74,17 +74,24 @@ void ABoss3Controller::BeginAttack(int Number)
 	{
 	case 0:
 		BeginAttack0();
+		break;
+	case 1:
+		BeginAttack1();
+		break;
 	}
 	Super::BeginAttack(Number);
 }
 
 void ABoss3Controller::AbortAttack(int Number)
 {
-
 	switch (Number)
 	{
 	case 0:
 		AbortAttack0();
+		break;
+	case 1:
+		AbortAttack1();
+		break;
 	}
 	Super::AbortAttack(Number);
 }
@@ -155,6 +162,7 @@ void ABoss3Controller::EndVulnerability()
 	);
 
 	RandomizeBoard();
+	PickRandomAttack();
 	Super::EndVulnerability();
 }
 
@@ -420,4 +428,92 @@ void ABoss3Controller::AbortAttack0()
 		actor->Destroy();
 	}
 	Attack0BombGrid.Empty();
+}
+
+void ABoss3Controller::BeginAttack1()
+{
+	Attack1BulletGroups.Add(
+		SpawnBulletGroupOnActor(Attack1ProjectileABP, Attack1PatternA, Attack1Damage)
+	);
+	Attack1BulletGroups.Add(
+		SpawnBulletGroupOnActor(Attack1ProjectileBBP, Attack1PatternB, Attack1Damage)
+	);
+	
+	FTimerManager& timerManager = GetWorldTimerManager();
+	timerManager.SetTimer(
+		Attack1SwapRotationTimer,
+		this,
+		&ABoss3Controller::Attack1SwapRotation,
+		Attack1SwapRotationTime,
+		true
+	);
+}
+
+void ABoss3Controller::Attack1SwapRotation()
+{
+	for (const auto& group : Attack1BulletGroups)
+	{
+		UPassiveRotation* rotation = group->GetComponentByClass<UPassiveRotation>();
+		if (rotation != nullptr)
+		{
+			rotation->RotationSpeed = -rotation->RotationSpeed;
+		}
+	}
+}
+
+void ABoss3Controller::AbortAttack1()
+{
+	FTimerManager& timerManager = GetWorldTimerManager();
+	timerManager.ClearTimer(Attack1SwapRotationTimer);
+
+	for (const auto& group : Attack1BulletGroups)
+	{
+		group->Destroy();
+	}
+	Attack1BulletGroups.Empty();
+}
+
+AActor* ABoss3Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern, float damage)
+{
+	FVector spawnLocation = GetPawn()->GetActorLocation();
+	spawnLocation.Z = Attack1Height;
+	AActor* newInstance = GetWorld()->SpawnActor(
+		blueprint,
+		&spawnLocation);
+
+	if (newInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to spawn attack"));
+		return nullptr;
+	}
+
+	UBulletGroupComponent* bulletGroup = newInstance->GetComponentByClass<UBulletGroupComponent>();
+	if (bulletGroup != nullptr)
+	{
+		bulletGroup->SetPattern(pattern);
+		if (damage > -1)
+		{
+			bulletGroup->Damage = damage;
+		}
+		bulletGroup->SpawnInAnimationDuration = Attack1SpawnInDuration;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Missing bullet group component"));
+	}
+
+	UPassiveRotation* rotation = newInstance->GetComponentByClass<UPassiveRotation>();
+	if (rotation != nullptr)
+	{
+		rotation->RotationSpeed = FQuat(
+			FRotator(0, Attack1RotationSpeed, 0));
+	}
+
+	UMoveStraight* straight = newInstance->GetComponentByClass<UMoveStraight>();
+	if (straight != nullptr)
+	{
+		straight->Speed = 0;
+	}
+
+	return newInstance;
 }

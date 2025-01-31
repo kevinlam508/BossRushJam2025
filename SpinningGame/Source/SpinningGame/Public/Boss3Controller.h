@@ -12,9 +12,12 @@
 #include "DamageType_A.h"
 #include "DamageType_B.h"
 #include "TimerManager.h"
+#include "PassiveRotation.h"
+#include "MoveStraight.h"
 #include "RotationColliderEvents.h"
 #include "PuzzleBoardViewComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "BulletGroupComponent.h"
 #include "Boss3Controller.generated.h"
 
 
@@ -90,6 +93,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 0")
 	int Attack0BombDetonateLineLength = 3;
 
+	// Attack 1
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TSubclassOf<AActor> Attack1ProjectileABP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TSubclassOf<AActor> Attack1ProjectileBBP;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TArray<FLocationList> Attack1PatternA;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	TArray<FLocationList> Attack1PatternB;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1RotationSpeed = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1Damage = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1SwapRotationTime = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1Height;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack 1")
+	float Attack1SpawnInDuration = 5;
+
 private:
 
 	PuzzleBoard Board;
@@ -116,4 +139,12 @@ private:
 	void EndAttack0();
 	void AbortAttack0();
 	void Attack0SpawnBomb();
+
+	// Attack 1
+	FTimerHandle Attack1SwapRotationTimer;
+	TArray<TObjectPtr<AActor>> Attack1BulletGroups = TArray<TObjectPtr<AActor>>();
+	void BeginAttack1();
+	void AbortAttack1();
+	AActor* SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern, float damage);
+	void Attack1SwapRotation();
 };
