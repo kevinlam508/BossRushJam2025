@@ -247,12 +247,15 @@ void ABoss3Controller::Attack0SpawnBomb()
 	// Check for lines after delay
 	UMoveStraight* moveStraight = newInstance->GetComponentByClass<UMoveStraight>();
 	float landTime = Attack0BombSpawnHeight / moveStraight->Speed;
-	
+
 	FTimerDelegate checkDelegate;
 	checkDelegate.BindLambda([&, gridIndex, component]()
 	{
-
-		UE_LOG(LogTemp, Warning, TEXT("New Drop %s"), *gridIndex.ToString());
+		// Safety: abort if deleted through other means
+		if (component->IsBeingDestroyed())
+		{
+			return;
+		}
 		float z = component->GetOwner()->GetActorLocation().Z;
 
 		TArray<FVector> horizontallyAdjacent;
@@ -383,6 +386,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 		landTime + 0.05, // extra buffer to let ground check work
 		false
 	);
+	Attack0LineCheckTimers.Add(handle);
 }
 
 void ABoss3Controller::BeginAttack0()
@@ -405,6 +409,18 @@ void ABoss3Controller::EndAttack0()
 		pair.Value->Detonate();
 	}
 	Attack0BombGrid.Empty();
+
+	FTimerManager& timerManager = GetWorldTimerManager();
+	for (auto& timer : Attack0LineCheckTimers)
+	{
+		if (!timerManager.IsTimerActive(timer))
+		{
+			continue;
+		}
+
+		timerManager.ClearTimer(timer);
+	}
+	Attack0LineCheckTimers.Empty();
 }
 
 void ABoss3Controller::AbortAttack0()

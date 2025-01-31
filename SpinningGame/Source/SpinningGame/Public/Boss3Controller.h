@@ -134,6 +134,7 @@ private:
 	// Attack0
 	float Attack0GroundCheckTolerance = 1.5;
 	FTimerHandle Attack0BombDropTimer;
+	TSet<FTimerHandle> Attack0LineCheckTimers;
 	TMap<FVector, UBombComponent*> Attack0BombGrid;
 	void BeginAttack0();
 	void EndAttack0();
