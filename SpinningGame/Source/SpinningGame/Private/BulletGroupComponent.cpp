@@ -126,9 +126,11 @@ void UBulletGroupComponent::OnBulletOverlap(UPrimitiveComponent* OverlappedCompo
 
 void UBulletGroupComponent::DestroyComponentHeirarch(USceneComponent* Component)
 {
-	for (auto& child : Component->GetAttachChildren())
+	TArray<USceneComponent*> children;
+	Component->GetChildrenComponents(true, children);
+	for (auto& child : children)
 	{
-		DestroyComponentHeirarch(child);
+		child->DestroyComponent(false);
 	}
 
 	Component->DestroyComponent(false);
