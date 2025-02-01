@@ -50,6 +50,7 @@ void UBulletGroupComponent::SetPattern(const TArray<FLocationList>& Pattern)
 		AddBullet(bulletTemplates[i], instances[0]);
 	}
 
+	GetOwner()->RegisterAllComponents();
 	GetOwner()->GetWorldTimerManager().SetTimer(
 		SpawnInTimer,
 		this,
@@ -63,6 +64,8 @@ void UBulletGroupComponent::SetPattern(const TArray<FLocationList>& Pattern)
 TObjectPtr<USceneComponent> UBulletGroupComponent::DeepDuplicateChildComponent(TObjectPtr<USceneComponent> ToDuplicate, TObjectPtr<USceneComponent> Parent)
 {
 	USceneComponent* copy = DuplicateObject(ToDuplicate, GetOwner());
+	
+	
 	copy->AttachToComponent(Parent, 
 		FAttachmentTransformRules(
 			EAttachmentRule::KeepRelative, true));
@@ -73,7 +76,6 @@ TObjectPtr<USceneComponent> UBulletGroupComponent::DeepDuplicateChildComponent(T
 		DeepDuplicateChildComponent(child, result);
 	}
 
-	GetOwner()->RegisterAllComponents();
 	return result;
 }
 
