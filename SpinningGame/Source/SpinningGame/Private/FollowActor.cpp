@@ -50,8 +50,20 @@ void UFollowActor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		FVector deltaDistance = targetPosition - actorLocation;
 		deltaDistance = deltaDistance.GetClampedToMaxSize(maxDistance);
 		targetPosition = actorLocation + deltaDistance;
+	
+
+		if (FaceTarget)
+		{
+			deltaDistance.Z = 0;
+			deltaDistance.Normalize();
+			GetOwner()->SetActorRotation
+			(
+				deltaDistance.ToOrientationRotator()
+			);
+		}
 	}
 
 	GetOwner()->SetActorLocation(targetPosition, true);
+
 }
 

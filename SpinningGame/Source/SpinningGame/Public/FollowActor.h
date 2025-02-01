@@ -23,6 +23,9 @@ public:
 	float MaxSpeed = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Actor")
+	bool FaceTarget = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Actor")
 	TObjectPtr<AActor> Target;
 
 protected:
