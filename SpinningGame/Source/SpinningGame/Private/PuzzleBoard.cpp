@@ -102,7 +102,7 @@ void PuzzleBoard::AddIfMatching(int X1, int Y1,
 	int X3, int Y3,
 	TArray<FVector>& Output) const
 {
-	if (Grid[X1][Y1] == Grid[X2][Y2] && Grid[X2][Y2] == Grid[X3][Y3])
+	if (Grid[Y1][X1] == Grid[Y2][X2] && Grid[Y2][X2] == Grid[Y3][X3])
 	{
 		Output.Add(FVector(X1, Y1, 0));
 		Output.Add(FVector(X2, Y2, 0));
