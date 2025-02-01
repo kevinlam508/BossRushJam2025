@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BounceMovement.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWallBounce);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPINNINGGAME_API UBounceMovement : public UActorComponent
@@ -17,6 +18,9 @@ class SPINNINGGAME_API UBounceMovement : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UBounceMovement();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnWallBounce OnWallBounce;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bounce")
 	float Speed = 500;
