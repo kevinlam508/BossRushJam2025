@@ -258,7 +258,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 	checkDelegate.BindLambda([&, gridIndex, component]()
 	{
 		// Safety: abort if deleted through other means
-		if (component->IsBeingDestroyed())
+		if (!component->IsValidLowLevel())
 		{
 			return;
 		}
@@ -437,13 +437,13 @@ void ABoss3Controller::AbortAttack0()
 	for (const auto& pair : Attack0BombGrid)
 	{
 		UBombComponent* component = pair.Value;
-		if (component->IsBeingDestroyed())
+		if (!component->IsValidLowLevel())
 		{
 			continue;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (actor->IsActorBeingDestroyed())
+		if (!actor->IsValidLowLevel())
 		{
 			continue;
 		}
@@ -475,6 +475,11 @@ void ABoss3Controller::Attack1SwapRotation()
 {
 	for (const auto& group : Attack1BulletGroups)
 	{
+		if (!group->IsValidLowLevel())
+		{
+			continue;
+		}
+
 		UPassiveRotation* rotation = group->GetComponentByClass<UPassiveRotation>();
 		if (rotation != nullptr)
 		{
@@ -490,6 +495,10 @@ void ABoss3Controller::AbortAttack1()
 
 	for (const auto& group : Attack1BulletGroups)
 	{
+		if (!group->IsValidLowLevel())
+		{
+			continue;
+		}
 		group->Destroy();
 	}
 	Attack1BulletGroups.Empty();
