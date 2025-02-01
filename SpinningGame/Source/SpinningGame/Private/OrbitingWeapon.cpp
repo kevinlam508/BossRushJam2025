@@ -220,7 +220,7 @@ void UOrbitingWeapon::WeaponCollision(UPrimitiveComponent* OverlappedComponent, 
 	FVector traceStart = GetOwner()->GetActorLocation();
 	FVector traceEnd = OtherComp->GetComponentLocation();
 	FCollisionObjectQueryParams objectParams;
-	objectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4);
+	objectParams.AddObjectTypesToQuery(OtherComp->GetCollisionObjectType());
 	GetWorld()->LineTraceSingleByObjectType(
 		hit,
 		traceStart,
