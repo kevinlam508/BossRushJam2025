@@ -66,7 +66,7 @@ TObjectPtr<USceneComponent> UBulletGroupComponent::DeepDuplicateChildComponent(T
 	copy->AttachToComponent(Parent, 
 		FAttachmentTransformRules(
 			EAttachmentRule::KeepRelative, true));
-	
+
 	TObjectPtr<USceneComponent> result = TObjectPtr<USceneComponent>(copy);
 	for (auto& child : ToDuplicate->GetAttachChildren())
 	{
@@ -115,13 +115,23 @@ void UBulletGroupComponent::OnBulletOverlap(UPrimitiveComponent* OverlappedCompo
 	}
 	// Destroy bullets as they collide
 	DestroyedBulletCount++;
-	OverlappedComponent->DestroyComponent();
-
+	//OverlappedComponent->DestroyComponent(false);
+	DestroyComponentHeirarch(OverlappedComponent);
 	// Last bullet, destroy actor
 	if (DestroyedBulletCount == Info.Num())
 	{
 		GetOwner()->Destroy();
 	}
+}
+
+void UBulletGroupComponent::DestroyComponentHeirarch(USceneComponent* Component)
+{
+	for (auto& child : Component->GetAttachChildren())
+	{
+		DestroyComponentHeirarch(child);
+	}
+
+	Component->DestroyComponent(false);
 }
 
 void UBulletGroupComponent::SpawnInAnimation()

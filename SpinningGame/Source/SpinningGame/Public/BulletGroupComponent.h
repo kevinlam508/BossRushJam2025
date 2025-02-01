@@ -77,4 +77,6 @@ private:
 		const FHitResult& SweepResult);
 
 	void SpawnInAnimation();
+
+	void DestroyComponentHeirarch(USceneComponent* component);
 };
