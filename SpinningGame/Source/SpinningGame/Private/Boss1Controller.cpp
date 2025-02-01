@@ -226,6 +226,7 @@ void ABoss1Controller::TickAttack0()
 		ACharacter* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 		FVector towardsPlayer = player->GetActorLocation()
 			- GetPawn()->GetActorLocation();
+		towardsPlayer.Z = 0;
 		towardsPlayer.Normalize();
 		moveStraight->Direction = towardsPlayer;
 	}
