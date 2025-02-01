@@ -85,6 +85,31 @@ bool PuzzleBoard::HasLine() const
 		|| (Grid[0][2] == Grid[1][2] && Grid[1][2] == Grid[2][2]);
 }
 
+void PuzzleBoard::GetLineIndicies(TArray<FVector>& Output) const
+{
+	Output.Empty(3);
+
+	AddIfMatching(0, 0, 0, 1, 0, 2, Output);
+	AddIfMatching(1, 0, 1, 1, 1, 2, Output);
+	AddIfMatching(2, 0, 2, 1, 2, 2, Output);
+	AddIfMatching(0, 0, 1, 0, 2, 0, Output);
+	AddIfMatching(0, 1, 1, 1, 2, 1, Output);
+	AddIfMatching(0, 2, 1, 2, 2, 2, Output);
+}
+
+void PuzzleBoard::AddIfMatching(int X1, int Y1,
+	int X2, int Y2,
+	int X3, int Y3,
+	TArray<FVector>& Output) const
+{
+	if (Grid[X1][Y1] == Grid[X2][Y2] && Grid[X2][Y2] == Grid[X3][Y3])
+	{
+		Output.Add(FVector(X1, Y1, 0));
+		Output.Add(FVector(X2, Y2, 0));
+		Output.Add(FVector(X3, Y3, 0));
+	}
+}
+
 int PuzzleBoard::GetValue(int X, int Y) const
 {
 	return Grid[Y][X];

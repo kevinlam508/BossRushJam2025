@@ -112,6 +112,12 @@ bool UPuzzleBoardViewComponent::IsAnimating() const
 	return timerManager.IsTimerActive(AnimationHandle);
 }
 
+TObjectPtr<UPrimitiveComponent> UPuzzleBoardViewComponent::GetPiece(int X, int Y) const
+{
+	return Cast<UPrimitiveComponent>(Board[Y][X]->GetChildComponent(0));
+}
+
+
 void UPuzzleBoardViewComponent::SetPatternAnimation()
 {
 	FTimerManager& timerManager = GetOwner()->GetWorldTimerManager();

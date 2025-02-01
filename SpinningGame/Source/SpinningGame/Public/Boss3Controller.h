@@ -13,13 +13,12 @@
 #include "DamageType_B.h"
 #include "TimerManager.h"
 #include "PassiveRotation.h"
-#include "MoveStraight.h"
 #include "RotationColliderEvents.h"
 #include "PuzzleBoardViewComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "BulletGroupComponent.h"
+#include "Boss3ControllerEvents.h"
 #include "Boss3Controller.generated.h"
-
 
 template<typename T>
 struct AnimationData
@@ -57,6 +56,8 @@ public:
 	FVector InvulernablePosition = FVector(1260, 1690, 90);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vulnerability")
 	float ExitVulnerabilityKnockback = 3000;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vulnerability")
+	float EnterVulnerabilityDelay = 5;
 
 	UFUNCTION(BlueprintCallable)
 	void OnPossess_Implementation(AActor* Actor) override;
@@ -118,11 +119,12 @@ private:
 	PuzzleBoard Board;
 	TObjectPtr<UPuzzleBoardViewComponent> BoardView;
 	TObjectPtr<URotationColliderEvents> RotationColliderEvents;
-
+	bool IsAnimatingMatch;
 	void RandomizeBoard();
 
 	UFUNCTION()
 	void CheckVulerability();
+	void DelayTriggerVulnerable();
 
 	UFUNCTION()
 	void OnSetPatternAnimationEnd();

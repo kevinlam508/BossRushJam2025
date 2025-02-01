@@ -6,6 +6,16 @@
 #include "BossControllerEvents.h"
 #include "Boss3ControllerEvents.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnLineComplete,
+	UPrimitiveComponent*,
+	First,
+	UPrimitiveComponent*,
+	Second,
+	UPrimitiveComponent*,
+	Third
+);
+
 /**
  * 
  */
@@ -14,4 +24,7 @@ class SPINNINGGAME_API UBoss3ControllerEvents : public UBossControllerEvents
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnLineComplete OnLineComplete;
 };

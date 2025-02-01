@@ -23,15 +23,17 @@ void ABoss3Controller::OnUnPossess_Implementation()
 
 void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType)
 {
-	// No damage time, not rotational hit
+	// No damage type, not rotational hit
 	if (DamageType == nullptr)
 	{
 		return;
 	}
 
-	// Only rotate while vulnerable
+	// Only rotate while not vulnerable
 	// or not currently rotating
-	if (IsVulnerable() || BoardView->IsAnimating())
+	if (IsVulnerable() 
+		|| BoardView->IsAnimating()
+		|| IsAnimatingMatch)
 	{
 		return;
 	}
@@ -132,6 +134,8 @@ void ABoss3Controller::BeginVulnerability()
 
 void ABoss3Controller::EndVulnerability()
 {
+	IsAnimatingMatch = false;
+
 	FTimerManager& timerManager = GetWorldTimerManager();
 
 	// Knock player away from board
@@ -183,12 +187,38 @@ void ABoss3Controller::CheckVulerability()
 {
 	if (Board.HasLine())
 	{
-		BecomeVulnerable();
+		TArray<FVector> lineIndices;
+		Board.GetLineIndicies(lineIndices);
+		UBoss3ControllerEvents* events = Cast<UBoss3ControllerEvents>(Events);
+		if (events != nullptr)
+		{
+			events->OnLineComplete.Broadcast
+			(
+				BoardView->GetPiece(lineIndices[0].X, lineIndices[0].Y),
+				BoardView->GetPiece(lineIndices[1].X, lineIndices[1].Y),
+				BoardView->GetPiece(lineIndices[2].X, lineIndices[2].Y)
+			);
+		}
+
+		FTimerManager& timerManager = GetWorldTimerManager();
+		FTimerHandle handle;
+		timerManager.SetTimer
+		(
+			handle,
+			this,
+			&ABoss3Controller::DelayTriggerVulnerable,
+			EnterVulnerabilityDelay
+		);
 	}
 	else
 	{
 		RotationColliderEvents->OnToggleRotationColliders.Broadcast(true);
 	}
+}
+
+void ABoss3Controller::DelayTriggerVulnerable()
+{
+	BecomeVulnerable();
 }
 
 void ABoss3Controller::OnSetPatternAnimationEnd()

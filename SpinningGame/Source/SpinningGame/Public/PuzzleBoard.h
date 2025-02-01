@@ -34,6 +34,7 @@ public:
 	void RandomizeBoard();
 	void RotateCorner(BoardCorner Corner, CornerRotation Rotation);
 	bool HasLine() const;
+	void GetLineIndicies(TArray<FVector>& Output) const;
 	int GetValue(int X, int Y) const;
 
 	void LogBoard() const;
@@ -53,4 +54,9 @@ private:
 
 	void RotateTiles(int X, int Y, CornerRotation Rotation);
 	void RotateValues(int& A, int& B, int& C, int& D);
+
+	void AddIfMatching(int X1, int Y1, 
+		int X2, int Y2,
+		int X3, int Y3,
+		TArray<FVector>& Output) const;
 };

@@ -32,6 +32,7 @@ public:
 	void SetPattern(const PuzzleBoard& BoardData, float Duration);
 	void AnimateRotation(BoardCorner Corner, CornerRotation Rotation, float Duration);
 	bool IsAnimating() const;
+	TObjectPtr<UPrimitiveComponent> GetPiece(int X, int Y) const;
 
 protected:
 	// Called when the game starts
