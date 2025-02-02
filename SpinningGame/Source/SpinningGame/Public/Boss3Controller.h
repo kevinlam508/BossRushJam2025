@@ -66,7 +66,7 @@ public:
 	void OnUnPossess_Implementation();
 
 	UFUNCTION(BlueprintCallable)
-	void RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType);
+	bool RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType);
 
 	virtual int GetTotalAttacks() const override;
 	virtual void Setup(float Duration) override;

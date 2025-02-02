@@ -21,12 +21,12 @@ void ABoss3Controller::OnUnPossess_Implementation()
 	BoardView->OnSetPatternEnd.RemoveDynamic(this, &ABoss3Controller::OnSetPatternAnimationEnd);
 }
 
-void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType)
+bool ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclassOf<UDamageType>& DamageType)
 {
 	// No damage type, not rotational hit
 	if (DamageType == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	// Only rotate while not vulnerable
@@ -35,7 +35,7 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 		|| BoardView->IsAnimating()
 		|| IsAnimatingMatch)
 	{
-		return;
+		return false;
 	}
 	RotationColliderEvents->OnToggleRotationColliders.Broadcast(false);
 
@@ -63,6 +63,8 @@ void ABoss3Controller::RotateBoardCorner(const FName& CornerName, const TSubclas
 
 	Board.RotateCorner(corner, rotation);
 	BoardView->AnimateRotation(corner, rotation, RotationAnimationDuration);
+
+	return true;
 }
 
 int ABoss3Controller::GetTotalAttacks() const
@@ -286,8 +288,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 	FTimerDelegate checkDelegate;
 	checkDelegate.BindLambda([&, gridIndex, component]()
-	{
-		
+	{		
 		// Safety: abort if deleted through other means
 		if (!IsValid(component))
 		{
@@ -319,7 +320,8 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor))
+			if (!IsValid(neighbor)
+				|| !IsValid(neighbor->GetOwner()))
 			{
 				break;
 			}
@@ -346,7 +348,8 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor))
+			if (!IsValid(neighbor)
+				|| !IsValid(neighbor->GetOwner()))
 			{
 				break;
 			}
@@ -377,7 +380,8 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor))
+			if (!IsValid(neighbor)
+				|| !IsValid(neighbor->GetOwner()))
 			{
 				break;
 			}
@@ -404,7 +408,8 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor))
+			if (!IsValid(neighbor) 
+				|| !IsValid(neighbor->GetOwner()))
 			{
 				break;
 			}
@@ -470,6 +475,17 @@ void ABoss3Controller::EndAttack0()
 {
 	for (const auto& pair : Attack0BombGrid)
 	{
+		UBombComponent* component = pair.Value;
+		if (!IsValid(component))
+		{
+			continue;
+		}
+
+		AActor* actor = component->GetOwner();
+		if (!IsValid(actor))
+		{
+			continue;
+		}
 		pair.Value->Detonate();
 	}
 	Attack0BombGrid.Empty();
@@ -533,7 +549,7 @@ void ABoss3Controller::Attack1SwapRotation()
 {
 	for (const auto& group : Attack1BulletGroups)
 	{
-		if (!group->IsValidLowLevel())
+		if (!IsValid(group))
 		{
 			continue;
 		}
@@ -553,7 +569,7 @@ void ABoss3Controller::AbortAttack1()
 
 	for (const auto& group : Attack1BulletGroups)
 	{
-		if (!group->IsValidLowLevel())
+		if (!IsValid(group))
 		{
 			continue;
 		}
