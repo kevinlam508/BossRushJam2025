@@ -287,14 +287,15 @@ void ABoss3Controller::Attack0SpawnBomb()
 	FTimerDelegate checkDelegate;
 	checkDelegate.BindLambda([&, gridIndex, component]()
 	{
+		
 		// Safety: abort if deleted through other means
-		if (!(component->IsValidLowLevel()))
+		if (!IsValid(component))
 		{
 			return;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (!(actor->IsValidLowLevel()))
+		if (!IsValid(actor))
 		{
 			return;
 		}
@@ -318,6 +319,11 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
+			if (!IsValid(neighbor))
+			{
+				break;
+			}
+
 			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
 			if (diff > Attack0GroundCheckTolerance)
 			{
@@ -340,6 +346,11 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
+			if (!IsValid(neighbor))
+			{
+				break;
+			}
+
 			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
 			if (diff > Attack0GroundCheckTolerance)
 			{
@@ -366,6 +377,11 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
+			if (!IsValid(neighbor))
+			{
+				break;
+			}
+			
 			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
 			if (diff > Attack0GroundCheckTolerance)
 			{
@@ -388,6 +404,11 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
+			if (!IsValid(neighbor))
+			{
+				break;
+			}
+			
 			float diff = FMath::Abs(neighbor->GetOwner()->GetActorLocation().Z - z);
 			if (diff > Attack0GroundCheckTolerance)
 			{
@@ -474,13 +495,13 @@ void ABoss3Controller::AbortAttack0()
 	for (const auto& pair : Attack0BombGrid)
 	{
 		UBombComponent* component = pair.Value;
-		if (!component->IsValidLowLevel())
+		if (!IsValid(component))
 		{
 			continue;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (!actor->IsValidLowLevel())
+		if (!IsValid(actor))
 		{
 			continue;
 		}
