@@ -1,6 +1,6 @@
 //Maya ASCII 2023 scene
-//Name: Player_OmniWalkV2.ma
-//Last modified: Sat, Feb 01, 2025 07:07:41 PM
+//Name: Player_OmniWalkV3.ma
+//Last modified: Sat, Feb 01, 2025 07:08:21 PM
 //Codeset: 1252
 file -rdi 1 -ns "Player_rig" -rfn "Player_rigRN" -op "v=0;" -typ "mayaAscii"
 		 "C:/EMG_GameProjects/BossRushJam2025/Art/Characters/Player/Player_rig.ma";
@@ -20,7 +20,7 @@ fileInfo "product" "Maya 2023";
 fileInfo "version" "2023";
 fileInfo "cutIdentifier" "202202161415-df43006fd3";
 fileInfo "osv" "Windows 11 Pro v2009 (Build: 22631)";
-fileInfo "UUID" "A713BD79-446A-823D-F951-7BA92E53B486";
+fileInfo "UUID" "F3DE1113-4B3B-9A3B-6BDF-3E9C82380C69";
 createNode transform -s -n "persp";
 	rename -uid "C3C39CAC-46F4-B028-9CAE-838964A2CE99";
 	setAttr ".v" no;
@@ -34,7 +34,7 @@ createNode camera -s -n "perspShape" -p "persp";
 	setAttr ".imn" -type "string" "persp";
 	setAttr ".den" -type "string" "persp_depth";
 	setAttr ".man" -type "string" "persp_mask";
-	setAttr ".tp" -type "double3" 0.0050395080431115957 6.7618933309558136 0 ;
+	setAttr ".tp" -type "double3" 0.0050395080431115957 40.905168022371328 0 ;
 	setAttr ".hc" -type "string" "viewSet -p %camera";
 createNode transform -s -n "top";
 	rename -uid "65B92404-4EE5-C3E1-A79A-18AD8A7ADA2F";
@@ -5530,7 +5530,7 @@ createNode animCurveTL -n "CTRL_foot_r_IK_translateZ_Forwards_inputA";
 	setAttr ".wgt" no;
 	setAttr ".ktv[0]"  2 40.791937383280199;
 createNode nodeGraphEditorInfo -n "MayaNodeEditorSavedTabsInfo";
-	rename -uid "9F8EDAA7-483E-A9C7-295D-F4B51530D691";
+	rename -uid "07DAD70E-4485-A9C8-E674-3CB5ACFFB130";
 	setAttr ".tgi[0].tn" -type "string" "Untitled_1";
 	setAttr ".tgi[0].vl" -type "double2" -480.15871107893719 -83.333330021964301 ;
 	setAttr ".tgi[0].vh" -type "double2" 1824.6031020999615 59.523807158545942 ;
@@ -12307,4 +12307,4 @@ connectAttr "CTRL_foot_r_IK_translateY_Forwards_inputA.msg" "MayaNodeEditorSaved
 connectAttr "CTRL_foot_r_IK_translateZ_Forwards_inputA.msg" "MayaNodeEditorSavedTabsInfo.tgi[0].ni[900].dn"
 		;
 connectAttr "defaultRenderLayer.msg" ":defaultRenderingList1.r" -na;
-// End of Player_OmniWalkV2.ma
+// End of Player_OmniWalkV3.ma

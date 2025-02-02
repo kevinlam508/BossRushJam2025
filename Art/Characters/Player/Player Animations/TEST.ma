@@ -1,6 +1,6 @@
 //Maya ASCII 2023 scene
-//Name: Player_OmniWalkV2.ma
-//Last modified: Sat, Feb 01, 2025 07:07:41 PM
+//Name: TEST.ma
+//Last modified: Sat, Feb 01, 2025 07:07:21 PM
 //Codeset: 1252
 file -rdi 1 -ns "Player_rig" -rfn "Player_rigRN" -op "v=0;" -typ "mayaAscii"
 		 "C:/EMG_GameProjects/BossRushJam2025/Art/Characters/Player/Player_rig.ma";
@@ -20,12 +20,12 @@ fileInfo "product" "Maya 2023";
 fileInfo "version" "2023";
 fileInfo "cutIdentifier" "202202161415-df43006fd3";
 fileInfo "osv" "Windows 11 Pro v2009 (Build: 22631)";
-fileInfo "UUID" "A713BD79-446A-823D-F951-7BA92E53B486";
+fileInfo "UUID" "0BB1D475-4948-3CFE-FB70-AD92C9BDFBE3";
 createNode transform -s -n "persp";
 	rename -uid "C3C39CAC-46F4-B028-9CAE-838964A2CE99";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" -875.4645945338624 450.57875728457736 657.66164133503571 ;
-	setAttr ".r" -type "double3" -19.538352729594312 -54.200000000010498 0 ;
+	setAttr ".t" -type "double3" -1012.5759253344227 309.87259804320774 -527.82502118213313 ;
+	setAttr ".r" -type "double3" -12.33835272959476 -118.60000000001048 0 ;
 createNode camera -s -n "perspShape" -p "persp";
 	rename -uid "300697F1-4CBB-B64F-946D-14AA2452A453";
 	setAttr -k off ".v" no;
@@ -34,7 +34,7 @@ createNode camera -s -n "perspShape" -p "persp";
 	setAttr ".imn" -type "string" "persp";
 	setAttr ".den" -type "string" "persp_depth";
 	setAttr ".man" -type "string" "persp_mask";
-	setAttr ".tp" -type "double3" 0.0050395080431115957 6.7618933309558136 0 ;
+	setAttr ".tp" -type "double3" 0 18.443313432040988 1.1725693695467427 ;
 	setAttr ".hc" -type "string" "viewSet -p %camera";
 createNode transform -s -n "top";
 	rename -uid "65B92404-4EE5-C3E1-A79A-18AD8A7ADA2F";
@@ -966,7 +966,7 @@ createNode reference -n "Player_rigRN";
 		2 "|Player_rig:rig_controls|Player_rig:torso_grp|Player_rig:CTRL_chest_IK" 
 		"rotateOrder" " 0"
 		2 "|Player_rig:rig_controls|Player_rig:torso_grp|Player_rig:ikHandle_spine" 
-		"rotate" " -type \"double3\" -0.00023975771671268497 -0.53729906304304609 89.99999459117833567"
+		"rotate" " -type \"double3\" -0.00023975755418362635 -0.53729906304305253 89.99999459077392316"
 		
 		2 "Player_rig:geo" "visibility" " 0"
 		3 "Player_rig:reverse4.outputX" "|Player_rig:rig_controls|Player_rig:arm_r_grp|Player_rig:CTRL_arm_r_pole.visibility" 
@@ -2495,7 +2495,7 @@ createNode script -n "uiConfigurationScriptNode";
 	setAttr ".st" 3;
 createNode script -n "sceneConfigurationScriptNode";
 	rename -uid "012CE4E5-47C6-CB48-C515-3BA76535398F";
-	setAttr ".b" -type "string" "playbackOptions -min 0 -max 67 -ast 0 -aet 313 ";
+	setAttr ".b" -type "string" "playbackOptions -min 0 -max 60 -ast 0 -aet 313 ";
 	setAttr ".st" 6;
 createNode animCurveTL -n "CTRL_ship_translateY";
 	rename -uid "68D8469F-4082-891F-86FE-AA9A40DDA9DF";
@@ -2565,7 +2565,7 @@ createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateX_Backwards
 	rename -uid "E6AA023F-4B73-978F-CDF9-B997B2DE54E3";
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateY_Backwards";
 	rename -uid "C2E8917A-4054-69AD-157C-FC9693736D8A";
-	setAttr ".o" 6.7618933309558136;
+	setAttr ".o" 7.2727475998415789;
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateZ_Backwards";
 	rename -uid "96D948A3-40FF-5CE3-FF7A-34BA92498AD2";
 createNode animBlendNodeBoolean -n "Player_rig:CTRL_ship_visibility_Backwards";
@@ -2676,7 +2676,7 @@ createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateX_Forwards"
 	rename -uid "2A2B2F2F-4722-4EFB-8C74-788DB682BD6F";
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateY_Forwards";
 	rename -uid "00F5CCC5-4761-575F-6FAD-BD9C45DDB54F";
-	setAttr ".o" 6.7618933309558136;
+	setAttr ".o" 7.2727475998415789;
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateZ_Forwards";
 	rename -uid "89A27A2E-41A8-109C-4BC6-08974DEAD371";
 createNode animBlendNodeBoolean -n "Player_rig:CTRL_ship_visibility_Forwards";
@@ -3343,7 +3343,7 @@ createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateX_Right";
 	rename -uid "8D23BE7D-4E21-6872-3A2A-3F84EC9B639A";
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateY_Right";
 	rename -uid "B6D072AF-4E43-2787-0F40-71B1DF26B3D3";
-	setAttr ".o" 6.7618933309558136;
+	setAttr ".o" 7.2727475998415789;
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateZ_Right";
 	rename -uid "CC7694AE-479E-BD64-2788-8CA0E09CC488";
 createNode animBlendNodeBoolean -n "Player_rig:CTRL_ship_visibility_Right";
@@ -3952,7 +3952,7 @@ createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateX_Left";
 	rename -uid "695FCD1B-4D68-F3C0-4CFA-B0AB2B243BA3";
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateY_Left";
 	rename -uid "F473BFC6-4664-040D-2CE9-2FB96FBBB945";
-	setAttr ".o" 6.7618933309558136;
+	setAttr ".o" 7.2727475998415789;
 createNode animBlendNodeAdditiveDL -n "Player_rig:CTRL_ship_translateZ_Left";
 	rename -uid "5B852B1E-4FE9-834D-9C5C-FD9217DACAB2";
 createNode animBlendNodeBoolean -n "Player_rig:CTRL_ship_visibility_Left";
@@ -5530,7 +5530,7 @@ createNode animCurveTL -n "CTRL_foot_r_IK_translateZ_Forwards_inputA";
 	setAttr ".wgt" no;
 	setAttr ".ktv[0]"  2 40.791937383280199;
 createNode nodeGraphEditorInfo -n "MayaNodeEditorSavedTabsInfo";
-	rename -uid "9F8EDAA7-483E-A9C7-295D-F4B51530D691";
+	rename -uid "CBC6B969-49BA-4740-FB62-88BF4A8CB533";
 	setAttr ".tgi[0].tn" -type "string" "Untitled_1";
 	setAttr ".tgi[0].vl" -type "double2" -480.15871107893719 -83.333330021964301 ;
 	setAttr ".tgi[0].vh" -type "double2" 1824.6031020999615 59.523807158545942 ;
@@ -8239,8 +8239,8 @@ createNode nodeGraphEditorInfo -n "MayaNodeEditorSavedTabsInfo";
 	setAttr ".tgi[0].ni[900].y" -10100;
 	setAttr ".tgi[0].ni[900].nvs" 18304;
 select -ne :time1;
-	setAttr ".o" 59;
-	setAttr ".unw" 59;
+	setAttr ".o" 52;
+	setAttr ".unw" 52;
 select -ne :hardwareRenderingGlobals;
 	setAttr ".otfna" -type "stringArray" 22 "NURBS Curves" "NURBS Surfaces" "Polygons" "Subdiv Surface" "Particles" "Particle Instance" "Fluids" "Strokes" "Image Planes" "UI" "Lights" "Cameras" "Locators" "Joints" "IK Handles" "Deformers" "Motion Trails" "Components" "Hair Systems" "Follicles" "Misc. UI" "Ornaments"  ;
 	setAttr ".otfva" -type "Int32Array" 22 0 1 1 1 1 1
@@ -12307,4 +12307,4 @@ connectAttr "CTRL_foot_r_IK_translateY_Forwards_inputA.msg" "MayaNodeEditorSaved
 connectAttr "CTRL_foot_r_IK_translateZ_Forwards_inputA.msg" "MayaNodeEditorSavedTabsInfo.tgi[0].ni[900].dn"
 		;
 connectAttr "defaultRenderLayer.msg" ":defaultRenderingList1.r" -na;
-// End of Player_OmniWalkV2.ma
+// End of TEST.ma
