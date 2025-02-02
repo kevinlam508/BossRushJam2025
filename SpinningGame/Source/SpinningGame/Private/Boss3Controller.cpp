@@ -288,11 +288,18 @@ void ABoss3Controller::Attack0SpawnBomb()
 	checkDelegate.BindLambda([&, gridIndex, component]()
 	{
 		// Safety: abort if deleted through other means
-		if (!component->IsValidLowLevel())
+		if (!(component->IsValidLowLevel()))
 		{
 			return;
 		}
-		float z = component->GetOwner()->GetActorLocation().Z;
+
+		AActor* actor = component->GetOwner();
+		if (!(actor->IsValidLowLevel()))
+		{
+			return;
+		}
+
+		float z = actor->GetActorLocation().Z;
 
 		TArray<FVector> horizontallyAdjacent;
 		horizontallyAdjacent.Empty();
