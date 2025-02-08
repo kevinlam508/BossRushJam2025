@@ -280,6 +280,10 @@ void ABoss3Controller::Attack0SpawnBomb()
 		&spawnLocation
 	);
 	UBombComponent* component = newInstance->GetComponentByClass<UBombComponent>();
+	component->Index = gridIndex;
+	component->OnExplodeInternal.AddDynamic(
+		this, 
+		&ABoss3Controller::RemoveBomb);
 	Attack0BombGrid.Add(gridIndex, component);
 
 	// Check for lines after delay
@@ -290,17 +294,12 @@ void ABoss3Controller::Attack0SpawnBomb()
 	checkDelegate.BindLambda([&, gridIndex, component]()
 	{		
 		// Safety: abort if deleted through other means
-		if (!IsValid(component))
+		if (!IsComponentAlive(component))
 		{
 			return;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (!IsValid(actor))
-		{
-			return;
-		}
-
 		float z = actor->GetActorLocation().Z;
 
 		TArray<FVector> horizontallyAdjacent;
@@ -320,8 +319,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor)
-				|| !IsValid(neighbor->GetOwner()))
+			if (!IsComponentAlive(neighbor))
 			{
 				break;
 			}
@@ -348,8 +346,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor)
-				|| !IsValid(neighbor->GetOwner()))
+			if (!IsComponentAlive(neighbor))
 			{
 				break;
 			}
@@ -380,8 +377,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor)
-				|| !IsValid(neighbor->GetOwner()))
+			if (!IsComponentAlive(neighbor))
 			{
 				break;
 			}
@@ -408,8 +404,7 @@ void ABoss3Controller::Attack0SpawnBomb()
 
 			// HACK: only check pieces at same height to be "on the ground"
 			UBombComponent* neighbor = *find;
-			if (!IsValid(neighbor) 
-				|| !IsValid(neighbor->GetOwner()))
+			if (!IsComponentAlive(neighbor))
 			{
 				break;
 			}
@@ -473,22 +468,22 @@ void ABoss3Controller::BeginAttack0()
 
 void ABoss3Controller::EndAttack0()
 {
-	for (const auto& pair : Attack0BombGrid)
+	// Operate on a copy so notifications of destruction
+	// don't trigger concurrent modificaiton
+	TMap<FVector, UBombComponent*> temp =
+		TMap<FVector, UBombComponent*>(Attack0BombGrid);
+	Attack0BombGrid.Empty();
+	for (const auto& pair : temp)
 	{
 		UBombComponent* component = pair.Value;
-		if (!IsValid(component))
+		if (!IsComponentAlive(component))
 		{
 			continue;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (!IsValid(actor))
-		{
-			continue;
-		}
 		pair.Value->Detonate();
 	}
-	Attack0BombGrid.Empty();
 
 	FTimerManager& timerManager = GetWorldTimerManager();
 	for (auto& timer : Attack0LineCheckTimers)
@@ -507,23 +502,23 @@ void ABoss3Controller::AbortAttack0()
 {
 	FTimerManager& timerManager = GetWorldTimerManager();
 	timerManager.ClearTimer(Attack0BombDropTimer);
-
-	for (const auto& pair : Attack0BombGrid)
+	
+	// Operate on a copy so notifications of destruction
+	// don't trigger concurrent modificaiton
+	TMap<FVector, UBombComponent*> temp =
+		TMap<FVector, UBombComponent*>(Attack0BombGrid);
+	Attack0BombGrid.Empty();
+	for (const auto& pair : temp)
 	{
 		UBombComponent* component = pair.Value;
-		if (!IsValid(component))
+		if (!IsComponentAlive(component))
 		{
 			continue;
 		}
 
 		AActor* actor = component->GetOwner();
-		if (!IsValid(actor))
-		{
-			continue;
-		}
 		actor->Destroy();
 	}
-	Attack0BombGrid.Empty();
 }
 
 void ABoss3Controller::BeginAttack1()
@@ -621,4 +616,17 @@ AActor* ABoss3Controller::SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blu
 	}
 
 	return newInstance;
+}
+
+bool ABoss3Controller::IsComponentAlive(UActorComponent* Component)
+{
+	return IsValid(Component)
+		&& !(Component->IsBeingDestroyed())
+		&& IsValid(Component->GetOwner())
+		&& !(Component->GetOwner()->IsActorBeingDestroyed());
+}
+
+void ABoss3Controller::RemoveBomb(FVector Index)
+{
+	Attack0BombGrid.Remove(Index);
 }

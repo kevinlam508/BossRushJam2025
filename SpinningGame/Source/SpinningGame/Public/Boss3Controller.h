@@ -142,6 +142,8 @@ private:
 	void EndAttack0();
 	void AbortAttack0();
 	void Attack0SpawnBomb();
+	UFUNCTION()
+	void RemoveBomb(FVector Index);
 
 	// Attack 1
 	FTimerHandle Attack1SwapRotationTimer;
@@ -150,4 +152,6 @@ private:
 	void AbortAttack1();
 	AActor* SpawnBulletGroupOnActor(const TSubclassOf<AActor>& blueprint, const TArray<FLocationList>& pattern, float damage);
 	void Attack1SwapRotation();
+
+	bool IsComponentAlive(UActorComponent* Component);
 };

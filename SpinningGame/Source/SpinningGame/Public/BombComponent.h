@@ -8,6 +8,12 @@
 #include "Engine/DamageEvents.h" 
 #include "BombComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnExplodeInternal,
+	FVector,
+	Index
+);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExplode);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -22,6 +28,9 @@ public:
 	UPROPERTY(BlueprintAssignable);
 	FOnExplode OnExplode;
 
+	UPROPERTY();
+	FOnExplodeInternal OnExplodeInternal;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
 	float Damage = 5;
 
@@ -31,10 +40,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
 	float Delay = -1;
 
+	FVector Index;
+
 	void Detonate();
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
 		
 };

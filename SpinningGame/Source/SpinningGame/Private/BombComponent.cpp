@@ -13,6 +13,11 @@ UBombComponent::UBombComponent()
 	// ...
 }
 
+void UBombComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	OnExplodeInternal.Broadcast(Index);
+}
 
 // Called when the game starts
 void UBombComponent::BeginPlay()
